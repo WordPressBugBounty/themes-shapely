@@ -39,7 +39,7 @@
 		</div>
 	</div>
 
-	<a class="btn btn-sm fade-half back-to-top inner-link" href="#top"><i class="fas fa-angle-up"></i></a>
+	<a class="btn btn-sm fade-half back-to-top inner-link" href="#top"><i class="fa fa-angle-up"></i></a>
 </footer><!-- #colophon -->
 </div>
 </div><!-- #page -->

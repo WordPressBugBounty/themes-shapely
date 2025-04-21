@@ -23,6 +23,7 @@ $post_author   = get_theme_mod( 'post_author_area', true );
 $left_side     = get_theme_mod( 'post_author_left_side', false );
 $post_title    = get_theme_mod( 'title_above_post', true );
 $post_category = get_theme_mod( 'post_category', true );
+$show_categories_globally = get_theme_mod( 'show_categories_globally', true );
 
 ?>
 <article id="post-<?php the_ID(); ?>" <?php post_class( 'post-content post-grid-wide' ); ?>>
@@ -55,14 +56,17 @@ $post_category = get_theme_mod( 'post_category', true );
 			}
 			$image = get_the_post_thumbnail( get_the_ID(), $size );
 		} else {
-			$image = '<img class="wp-post-image" alt="" src="' . esc_url( get_template_directory_uri() ) . '/assets/images/placeholder.jpg" />';
+			// Use shapely_get_thumbnail function that now respects the placeholder settings
+			$image = shapely_get_thumbnail( 'shapely-featured' );
 		}
 		?>
+		<?php if ( ! empty( $image ) ) : ?>
 		<a href="<?php echo esc_url( get_permalink() ); ?>">
 			<?php echo wp_kses( $image, $allowed_tags ); ?>
 		</a>
+		<?php endif; ?>
 
-		<?php if ( isset( $category[0] ) && $post_category ) : ?>
+		<?php if ( isset( $category[0] ) && $post_category && $show_categories_globally ) : ?>
 			<span class="shapely-category">
 				<a href="<?php echo esc_url( get_category_link( $category[0]->term_id ) ); ?>">
 					<?php echo esc_html( $category[0]->name ); ?>
@@ -122,10 +126,10 @@ $post_category = get_theme_mod( 'post_category', true );
 	<?php
 	if ( is_single() ) :
 		$prev = get_previous_post_link();
-		$prev = str_replace( '&laquo;', '<div class="wrapper"><span class="fas fa-angle-left"></span>', $prev );
+		$prev = str_replace( '&laquo;', '<div class="wrapper"><span class="fa fa-angle-left"></span>', $prev );
 		$prev = str_replace( '</a>', '</a></div>', $prev );
 		$next = get_next_post_link();
-		$next = str_replace( '&raquo;', '<span class="fas fa-angle-right"></span></div>', $next );
+		$next = str_replace( '&raquo;', '<span class="fa fa-angle-right"></span></div>', $next );
 		$next = str_replace( '<a', '<div class="wrapper"><a', $next );
 		?>
 		<div class="shapely-next-prev row">
@@ -143,8 +147,8 @@ $post_category = get_theme_mod( 'post_category', true );
 		endif;
 
 		if ( $enable_tags ) :
-			$tags_list = get_the_tag_list( '', esc_html_x( ' ', 'tags separator', 'shapely' ) );
-			echo ! empty( $tags_list ) ? '<div class="shapely-tags"><span class="fas fa-tags"></span>' . $tags_list . '</div>' : '';
+			$tags_list = get_the_tag_list( '', ' ' );
+			echo ! empty( $tags_list ) ? '<div class="shapely-tags"><span class="fa fa-tags"></span>' . $tags_list . '</div>' : '';
 		endif;
 		?>
 

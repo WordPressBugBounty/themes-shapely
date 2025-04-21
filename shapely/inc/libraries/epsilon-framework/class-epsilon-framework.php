@@ -259,7 +259,7 @@ class Epsilon_Framework {
 			'row'        => esc_html__( 'Row', 'epsilon-framework' ),
 		) );
 
-		wp_enqueue_style( 'font-awesome', get_template_directory_uri() . '/assets/css/fontawesome6/all.min.css' );
+		wp_enqueue_style( 'font-awesome', EPSILON_URI . '../../assets/css/fontawesome6/all.min.css' );
 		wp_enqueue_style( 'epsilon-styles', EPSILON_URI . '/assets/css/style.css' );
 	}
 

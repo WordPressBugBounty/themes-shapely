@@ -145,4 +145,4 @@ This page template is used to create the Parallax homepage from our demo : https
 = 1.0.0 - March 26 2016 =
 * Initial release
 
-Stable tag: 1.2.18
+Stable tag: 1.2.19

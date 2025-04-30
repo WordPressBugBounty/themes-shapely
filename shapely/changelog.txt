@@ -1,3 +1,11 @@
+= 1.2.19 =
+* Fixed Builder Page template functionality that wasn't working properly
+* Added proper initialization for the Shapely_Builder class
+* Removed debug code and improved code quality
+* Enhanced widget area registration for Builder Page templates
+* Fixed issues with dynamic sidebar registration for Builder Pages
+* Improved error handling in theme template files
+
 = 1.2.18 =
 * Fixed issue with "Import Demo Content" functionality
 * Added proper null checks in contact form widget to prevent PHP warnings
@@ -186,3 +194,4 @@
  #35 - no longer relevant, widgets moved to plugin
  #21 - added custom header image
  #25 - fixed
+

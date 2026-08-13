@@ -1,0 +1,53 @@
+/*
+ * Block editor styles.
+ *
+ * Deliberately short. theme.json now carries the palette, the type scale, the
+ * heading sizes and the link and button treatments, and WordPress applies those
+ * to the editor canvas on its own -- so anything expressible there has been
+ * removed from here rather than maintained in two places that can drift.
+ *
+ * What is left is the handful of front-end rules from style.css that theme.json
+ * has no vocabulary for.
+ */
+
+/*
+ * theme.json sets the body font size, but not the reading rhythm the front end
+ * uses: style.css gives every block-level element a flat 24px bottom margin
+ * rather than the editor's default spacing.
+ */
+.editor-styles-wrapper p,
+.editor-styles-wrapper ul,
+.editor-styles-wrapper ol,
+.editor-styles-wrapper table,
+.editor-styles-wrapper blockquote,
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4,
+.editor-styles-wrapper h5,
+.editor-styles-wrapper h6 {
+	margin-top: 0;
+	margin-bottom: 24px;
+}
+
+/*
+ * Headings drop sharply on narrow screens on the front end. Without this the
+ * editor's mobile preview shows a 60px h1 where the visitor sees 32px.
+ */
+@media all and (max-width: 767px) {
+
+	.editor-styles-wrapper h1 {
+		font-size: 32px;
+	}
+}
+
+/* style.css blockquote: no rule, larger type, its own colour. */
+.editor-styles-wrapper blockquote {
+	overflow: hidden;
+	padding: 32px 0;
+	font-size: 18px;
+	font-weight: 400;
+	line-height: 24px;
+	color: #001c28;
+	border-left: 0 none;
+}

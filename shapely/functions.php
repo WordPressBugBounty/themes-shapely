@@ -51,6 +51,8 @@ require_once get_template_directory() . '/inc/socialnav.php';
 require_once get_template_directory() . '/inc/class-shapely-related-posts.php';
 require_once get_template_directory() . '/inc/class-shapely.php';
 require_once get_template_directory() . '/inc/class-shapely-builder.php';
+require_once get_template_directory() . '/inc/block-editor.php';
+require_once get_template_directory() . '/inc/class-shapely-migrations.php';
 
 if ( ! defined( 'SHAPELY_SETUP_LOADED' ) ) {
 	define( 'SHAPELY_SETUP_LOADED', true );
@@ -150,6 +152,19 @@ if ( ! function_exists( 'shapely_setup' ) ) :
 		 */
 		add_theme_support( 'responsive-embeds' );
 		add_theme_support( 'align-wide' );
+
+		/*
+		 * Core's default block styles. Without this, blocks that rely on them
+		 * -- separators, the gallery, quote variations -- fall back to
+		 * unstyled markup on the front end.
+		 */
+		add_theme_support( 'wp-block-styles' );
+
+		/*
+		 * Make the editor canvas resemble the front end. Enqueued rather than
+		 * inlined so it is cached and overridable by a child theme.
+		 */
+		add_editor_style( 'assets/css/editor-style.css' );
 
 		// Set up the WordPress core custom background feature.
 		add_theme_support(
@@ -286,7 +301,7 @@ function shapely_scripts() {
 	$uri = get_template_directory_uri();
 
 	// Add Bootstrap default CSS
-	wp_enqueue_style( 'bootstrap', $uri . '/assets/css/bootstrap.min.css', array(), '3.3.7' );
+	wp_enqueue_style( 'shapely-bootstrap', $uri . '/assets/css/bootstrap.min.css', array(), '3.3.7' );
 
 	/*
 	 * Registered under a theme-specific handle rather than the generic
@@ -308,7 +323,7 @@ function shapely_scripts() {
 	wp_enqueue_style( 'shapely-fonts', 'https://fonts.googleapis.com/css?family=Raleway:100,300,400,500,600,700&display=swap', array(), null );
 
 	// Add slider CSS
-	wp_enqueue_style( 'flexslider', $uri . '/assets/css/flexslider.css', array(), SHAPELY_VERSION );
+	wp_enqueue_style( 'shapely-flexslider', $uri . '/assets/css/flexslider.css', array(), SHAPELY_VERSION );
 
 	//Add custom theme css
 	wp_enqueue_style( 'shapely-style', get_stylesheet_uri(), array(), SHAPELY_VERSION );
@@ -335,7 +350,7 @@ function shapely_scripts() {
 	wp_enqueue_script( 'shapely-jquery-compat', $uri . '/assets/js/jquery-compat.js', array( 'jquery' ), SHAPELY_VERSION, true );
 
 	// Add slider JS
-	wp_enqueue_script( 'flexslider', $uri . '/assets/js/flexslider.min.js', array( 'jquery', 'shapely-jquery-compat' ), '2.7.2', true );
+	wp_enqueue_script( 'shapely-flexslider', $uri . '/assets/js/flexslider.min.js', array( 'jquery', 'shapely-jquery-compat' ), '2.7.2', true );
 
 	if ( is_page_template( 'page-templates/template-home.php' ) || is_page_template( 'page-templates/template-widget.php' ) ) {
 		wp_enqueue_script( 'shapely-parallax', $uri . '/assets/js/parallax.min.js', array( 'jquery' ), SHAPELY_VERSION, true );
@@ -343,9 +358,9 @@ function shapely_scripts() {
 	/**
 	 * OwlCarousel Library
 	 */
-	wp_enqueue_script( 'owl.carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.js', array( 'jquery' ), '2.3.4', true );
-	wp_enqueue_style( 'owl.carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.css', array(), '2.3.4' );
-	wp_enqueue_style( 'owl.carousel.theme', $uri . '/assets/js/owl-carousel/owl.theme.default.css', array(), '2.3.4' );
+	wp_enqueue_script( 'shapely-owl-carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.js', array( 'jquery' ), '2.3.4', true );
+	wp_enqueue_style( 'shapely-owl-carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.css', array(), '2.3.4' );
+	wp_enqueue_style( 'shapely-owl-carousel-theme', $uri . '/assets/js/owl-carousel/owl.theme.default.css', array(), '2.3.4' );
 
 	wp_enqueue_script(
 		'shapely-scripts', $uri . '/assets/js/shapely-scripts.js', array(

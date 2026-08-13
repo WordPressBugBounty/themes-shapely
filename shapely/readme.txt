@@ -65,9 +65,33 @@ This page template is used to create the Parallax homepage from our demo : https
 * jQuery Cloneya, Lisensed under [MIT](https://opensource.org/licenses/MIT)
 
 
+== Upgrade Notice ==
+
+= 1.3.0 =
+Removes the bundled Epsilon framework and adds theme.json. Your settings carry
+over untouched and the site should look identical. Child themes that dequeue the
+theme's Bootstrap, FlexSlider or Owl Carousel assets need their handles updated
+to shapely-bootstrap, shapely-flexslider, shapely-owl-carousel and
+shapely-owl-carousel-theme.
+
 == Changelog ==
 
+= 1.3.0 =
+* Removed the vendored Epsilon customizer framework. It was 144 files and 1.3 MB -- 52% of the theme -- and provided 31 toggle controls, one slider, two customizer sections and the welcome screen. All of those are now built on core WordPress APIs. The download is roughly a third smaller and the theme ships 51 PHP files instead of 88
+* Added theme.json, so the palette, type scale and layout widths have a single source of truth that the block editor reads. Colour options in the customizer still work exactly as before -- each one now overrides the matching theme.json value rather than maintaining a second palette
+* Fixed "Wide width" and "Full width" doing nothing on blocks. The theme has declared support for them since 2018 without ever shipping the CSS they need
+* Fixed images in post content overflowing their column. Bootstrap 3 only makes images responsive via a class that block markup never carries
+* Rebuilt the welcome screen and the demo importer on core APIs. The old AJAX endpoint accepted a class name and a method name from the request and called them; dismissals now run through a single handler with a nonce and a capability check
+* Fixed 11 customizer controls that would have disappeared entirely if the framework had ever failed to load, because their fallback registrations were incomplete
+* Renamed the bootstrap, flexslider, owl.carousel and owl.carousel.theme asset handles to be theme-specific. Generic handles can be claimed by a plugin first, which silently suppresses the theme's own file -- the same fault that blanked every icon on sites running Elementor in 1.2.20
+* The block editor now offers the theme's palette, and the editor canvas matches the front end
+
 = 1.2.21 =
+* Fixed the back-to-top arrow sitting off-centre in its button. The 36px button's content box was 22px tall and 10px wide after border and padding, so a 18px glyph with a 27px line box could not centre on either axis; measured 2.8px right and 1.9px high before, sub-pixel after
+* Fixed one-page section links in the menu, and the page-builder customizer, using site_url() where home_url() was meant. On installs with WordPress in its own subdirectory those pointed at /wp/ instead of the site address
+* Added add_theme_support( 'wp-block-styles' ) and add_editor_style(), so core block styles apply on the front end and the editor canvas matches the theme's typography
+* Added three block styles (two button styles and a short rule) and two block patterns, built from the theme's own button and colour values
+* Removed two orphaned Font Awesome 5 stylesheets that nothing enqueued
 * Fixed the arrow on submenu items that have a further submenu sitting well below its label, near the bottom edge of the row. It was centred with the 55px top menu bar's line height rather than the submenu row's, putting it 11.5px too low on desktop and 6px too high on mobile
 * Fixed Font Awesome 6 loading its glyphs from a leftover Font Awesome 5.15.3 font directory. The bundled stylesheet asked for "../webfonts/", which resolves out of assets/css/fontawesome6/ and into the old assets/css/webfonts/, so every icon added after 5.15.3 rendered as a blank gap -- the X (Twitter) icon in the footer social links being the visible one
 * Removed the orphaned Font Awesome 5 font files, which nothing referenced once the path above was corrected. The release zip drops from 3.16 MB to 1.88 MB
@@ -205,4 +229,4 @@ This page template is used to create the Parallax homepage from our demo : https
 = 1.0.0 - March 26 2016 =
 * Initial release
 
-Stable tag: 1.2.21
+Stable tag: 1.3.0

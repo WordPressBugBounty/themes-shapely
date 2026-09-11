@@ -301,23 +301,45 @@ function shapely_scripts() {
 	$uri = get_template_directory_uri();
 
 	// Add Bootstrap default CSS
-	wp_enqueue_style( 'shapely-bootstrap', $uri . '/assets/css/bootstrap.min.css', array(), '3.3.7' );
+	wp_enqueue_style( 'shapely-bootstrap', $uri . '/assets/css/bootstrap.min.css', array(), '3.4.1' );
 
 	/*
 	 * Registered under a theme-specific handle rather than the generic
 	 * 'font-awesome'. WordPress deduplicates by handle, so whichever plugin
 	 * registers 'font-awesome' first wins and every later enqueue is silently
 	 * a no-op. Elementor ships Font Awesome 4.7 under exactly that handle, so
-	 * on any site running it the theme's Font Awesome 6 never loaded at all --
+	 * on any site running it the theme's own Font Awesome never loaded at all --
 	 * and the theme's fa-brands / fa-solid classes do not exist in 4.x, which
 	 * is why the social, search and menu icons rendered as blank boxes.
+ *
+ * Font Awesome 7, split by style: the core file carries the icon name map and
+	 * each style file adds one @font-face. all.min.css was replaced because it also
+	 * carries v4 and v5 compatibility @font-face blocks, and no shim is wanted --
+	 * every class the theme renders is a native Font Awesome 7 name. Only woff2 is
+	 * bundled, and only the solid and brands faces, which are the only two the
+	 * theme renders.
  *
  * Versioned with SHAPELY_VERSION, not the Font Awesome version. The latter
  * never changes when the bundled file does, and this stylesheet is served
  * cache-control: immutable for a year -- a corrected copy would not have
  * reached a single returning visitor or CDN edge.
 	 */
-	wp_enqueue_style( 'shapely-font-awesome', $uri . '/assets/css/fontawesome6/all.min.css', array(), SHAPELY_VERSION );
+	$fa_uri = $uri . '/assets/css/fontawesome/';
+	/*
+	 * The bundled Font Awesome is subsetted to the glyphs this theme renders, a few
+	 * kilobytes rather than a few hundred. A site that uses Font Awesome classes in
+	 * its own content -- a widget, a page builder, a child theme -- can load the
+	 * complete set instead:
+	 *
+	 *     add_filter( 'shapely_full_fontawesome', '__return_true' );
+	 */
+	if ( apply_filters( 'shapely_full_fontawesome', false ) ) {
+		wp_enqueue_style( 'shapely-font-awesome', $fa_uri . 'fontawesome.min.css', array(), SHAPELY_VERSION );
+		wp_enqueue_style( 'shapely-font-awesome-solid', $fa_uri . 'solid.min.css', array( 'shapely-font-awesome' ), SHAPELY_VERSION );
+		wp_enqueue_style( 'shapely-font-awesome-brands', $fa_uri . 'brands.min.css', array( 'shapely-font-awesome' ), SHAPELY_VERSION );
+	} else {
+		wp_enqueue_style( 'shapely-font-awesome', $fa_uri . 'subset/fontawesome-subset.min.css', array(), SHAPELY_VERSION );
+	}
 
 	// Add Google Fonts
 	wp_enqueue_style( 'shapely-fonts', 'https://fonts.googleapis.com/css?family=Raleway:100,300,400,500,600,700&display=swap', array(), null );
@@ -353,7 +375,7 @@ function shapely_scripts() {
 	wp_enqueue_script( 'shapely-flexslider', $uri . '/assets/js/flexslider.min.js', array( 'jquery', 'shapely-jquery-compat' ), '2.7.2', true );
 
 	if ( is_page_template( 'page-templates/template-home.php' ) || is_page_template( 'page-templates/template-widget.php' ) ) {
-		wp_enqueue_script( 'shapely-parallax', $uri . '/assets/js/parallax.min.js', array( 'jquery' ), SHAPELY_VERSION, true );
+		wp_enqueue_script( 'shapely-parallax', $uri . '/assets/js/parallax.min.js', array( 'jquery' ), '1.5.0', true );
 	}
 	/**
 	 * OwlCarousel Library

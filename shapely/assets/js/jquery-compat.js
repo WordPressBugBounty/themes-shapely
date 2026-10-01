@@ -1,15 +1,18 @@
 /**
- * Minimal jQuery 3 -> 4 compatibility shim.
+ * jQuery 4 compatibility shim for the bundled plugins.
  *
- * jQuery 4.0 removes the `.bind()` / `.unbind()` / `.delegate()` / `.undelegate()`
- * event aliases. The bundled FlexSlider 2.x still calls all four, so it would
- * throw "is not a function" the moment WordPress ships jQuery 4 and drops
- * jQuery Migrate.
+ * jQuery 4.0 removed $.camelCase, $.type, $.isFunction, $.isArray, $.trim,
+ * $.isNumeric and $.now. OwlCarousel 2.3.4 calls $.camelCase every time it
+ * fires an event, so on jQuery 4 its first trigger throws and takes the rest
+ * of document-ready down with it.
  *
- * Every definition below is guarded, so on jQuery 3.x (where these methods still
- * exist) this file does nothing at all. Only the aliases FlexSlider actually
- * uses are restored -- notably NOT `.load()`, which was both an AJAX method and
- * an event alias and cannot be shimmed unambiguously.
+ * The event aliases (.bind(), .delegate(), .click(), ...) are only deprecated
+ * in 4.0 and still ship, but FlexSlider calls them and a later major or the
+ * slim build drops them, so they are covered too.
+ *
+ * Every definition is guarded, so on jQuery 3.x this file does nothing. Not
+ * `.load()`, which was both an AJAX method and an event alias and cannot be
+ * shimmed unambiguously.
  *
  * @package Shapely
  */
@@ -49,10 +52,8 @@
 	}
 
 	/*
-	 * jQuery 4 also drops every per-event shorthand method. Live testing on
-	 * WordPress 7.0.2 caught FlexSlider calling .blur()/.focus() and
-	 * OwlCarousel calling .resize(); both libraries are patched, but any
-	 * third-party widget dropped into a Shapely site may still use these.
+	 * The per-event shorthand methods. FlexSlider calls .blur()/.focus() and
+	 * OwlCarousel .resize(); any third-party widget may use others.
 	 */
 	'blur focus focusin focusout resize scroll click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup contextmenu'
 		.split( ' ' )
@@ -67,8 +68,8 @@
 		} );
 
 	/*
-	 * Type-checking utilities removed in jQuery 4. OwlCarousel used $.type();
-	 * the others are included because they travel together in older plugins.
+	 * Utilities removed in jQuery 4. OwlCarousel uses $.type() and
+	 * $.camelCase(); the others travel together in older plugins.
 	 */
 	if ( 'function' !== typeof $.type ) {
 		var class2type = {};
@@ -108,6 +109,15 @@
 		$.isNumeric = function ( obj ) {
 			var type = $.type( obj );
 			return ( 'number' === type || 'string' === type ) && ! isNaN( obj - parseFloat( obj ) );
+		};
+	}
+
+	if ( 'function' !== typeof $.camelCase ) {
+		// jQuery 3's implementation, including its "-ms-" special case.
+		$.camelCase = function ( string ) {
+			return String( string ).replace( /^-ms-/, 'ms-' ).replace( /-([a-z])/g, function ( all, letter ) {
+				return letter.toUpperCase();
+			} );
 		};
 	}
 

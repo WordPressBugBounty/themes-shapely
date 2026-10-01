@@ -7,7 +7,7 @@
  * theme's own appearance rather than core's defaults.
  *
  * Everything here mirrors values that already exist in style.css (the .btn
- * rules around line 1392 and the brand colour #745cf9) instead of introducing
+ * rules around line 1392 and the theme.json palette) instead of introducing
  * a second, competing palette.
  *
  * @package Shapely
@@ -39,8 +39,8 @@ if ( ! function_exists( 'shapely_register_block_styles' ) ) :
 				'label'        => esc_html__( 'Shapely Filled', 'shapely' ),
 				'inline_style' => '
 					.wp-block-button.is-style-shapely-filled .wp-block-button__link {
-						background: #745cf9;
-						border: 2px solid #745cf9;
+						background: var(--wp--preset--color--button, #745cf9);
+						border: 2px solid var(--wp--preset--color--button, #745cf9);
 						border-radius: 0;
 						color: #fff;
 						font-size: 12px;
@@ -51,8 +51,8 @@ if ( ! function_exists( 'shapely_register_block_styles' ) ) :
 					}
 					.wp-block-button.is-style-shapely-filled .wp-block-button__link:hover,
 					.wp-block-button.is-style-shapely-filled .wp-block-button__link:focus {
-						background: #5d47d7;
-						border-color: #5d47d7;
+						background: var(--wp--preset--color--button-hover, #5d47d7);
+						border-color: var(--wp--preset--color--button-hover, #5d47d7);
 						color: #fff;
 					}',
 			)
@@ -66,9 +66,9 @@ if ( ! function_exists( 'shapely_register_block_styles' ) ) :
 				'inline_style' => '
 					.wp-block-button.is-style-shapely-outline .wp-block-button__link {
 						background: transparent;
-						border: 2px solid #745cf9;
+						border: 2px solid var(--wp--preset--color--button, #745cf9);
 						border-radius: 0;
-						color: #745cf9;
+						color: var(--wp--preset--color--button, #745cf9);
 						font-size: 12px;
 						font-weight: 600;
 						letter-spacing: 1px;
@@ -77,7 +77,7 @@ if ( ! function_exists( 'shapely_register_block_styles' ) ) :
 					}
 					.wp-block-button.is-style-shapely-outline .wp-block-button__link:hover,
 					.wp-block-button.is-style-shapely-outline .wp-block-button__link:focus {
-						background: #745cf9;
+						background: var(--wp--preset--color--button, #745cf9);
 						color: #fff;
 					}',
 			)
@@ -90,7 +90,7 @@ if ( ! function_exists( 'shapely_register_block_styles' ) ) :
 				'label'        => esc_html__( 'Shapely Short Rule', 'shapely' ),
 				'inline_style' => '
 					.wp-block-separator.is-style-shapely-short {
-						background: #745cf9;
+						background: var(--wp--preset--color--button, #745cf9);
 						border: 0;
 						height: 3px;
 						margin: 32px auto;
@@ -183,3 +183,65 @@ if ( ! function_exists( 'shapely_register_block_patterns' ) ) :
 	}
 endif;
 add_action( 'init', 'shapely_register_block_patterns' );
+
+if ( ! function_exists( 'shapely_editor_layout_sizes' ) ) :
+	/**
+	 * Size the block editor like the column the post will actually render in.
+	 *
+	 * theme.json says 1140px for content and wide blocks, which is the Full
+	 * Width layout. Posts default to a sidebar layout, where the column is
+	 * 750px and wide blocks stay inside it, so the editor showed lines half as
+	 * long again as the published post. The front end is untouched: style.css
+	 * already sizes each layout.
+	 *
+	 * @param WP_Theme_JSON_Data $theme_json The theme's theme.json data.
+	 *
+	 * @return WP_Theme_JSON_Data
+	 */
+	function shapely_editor_layout_sizes( $theme_json ) {
+		global $pagenow;
+
+		if ( ! is_admin() || ! in_array( $pagenow, array( 'post.php', 'post-new.php' ), true ) ) {
+			return $theme_json;
+		}
+
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only: which post the editor is open on.
+		if ( 'post.php' === $pagenow && isset( $_GET['post'] ) ) {
+			$layout = shapely_get_post_layout_class( absint( $_GET['post'] ) );
+		} else {
+			$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : 'post';
+			$layout    = shapely_get_post_layout_class(
+				(object) array(
+					'post_type' => $post_type,
+					'ID'        => 0,
+					'filter'    => 'raw',
+				)
+			);
+		}
+		// phpcs:enable
+
+		$sizes = array(
+			'full-width'    => array( '1140px', '1140px' ),
+			'no-sidebar'    => array( '750px', '1140px' ),
+			'sidebar-left'  => array( '750px', '750px' ),
+			'sidebar-right' => array( '750px', '750px' ),
+		);
+
+		if ( ! isset( $sizes[ $layout ] ) ) {
+			return $theme_json;
+		}
+
+		return $theme_json->update_with(
+			array(
+				'version'  => 2,
+				'settings' => array(
+					'layout' => array(
+						'contentSize' => $sizes[ $layout ][0],
+						'wideSize'    => $sizes[ $layout ][1],
+					),
+				),
+			)
+		);
+	}
+endif;
+add_filter( 'wp_theme_json_data_theme', 'shapely_editor_layout_sizes' );

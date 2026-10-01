@@ -25,7 +25,7 @@ $shapely_transparent_header_opacity = get_theme_mod( 'shapely_sticky_header_tran
 
 // Set header style.
 $shapely_nav_style = '';
-if ( 1 == $shapely_transparent_header && $shapely_transparent_header_opacity ) {
+if ( $shapely_transparent_header && $shapely_transparent_header_opacity ) {
 	/*
 	 * The customizer stores 0-100; rgba() needs a 0-1 alpha. The old string
 	 * concatenation ("0." . $value) only worked because the slider emits
@@ -60,7 +60,7 @@ if ( 1 == $shapely_transparent_header && $shapely_transparent_header_opacity ) {
 
 	<header id="masthead" class="site-header<?php echo esc_attr( get_theme_mod( 'mobile_menu_on_desktop', false ) ? ' mobile-menu' : '' ); ?>" role="banner">
 		<div class="nav-container">
-			<nav <?php echo $shapely_nav_style ? 'style="' . esc_attr( $shapely_nav_style ) . '"' : ''; ?> id="site-navigation" class="main-navigation" role="navigation">
+			<nav <?php echo $shapely_nav_style ? 'style="' . esc_attr( $shapely_nav_style ) . '"' : ''; ?> id="site-navigation" class="main-navigation" aria-label="<?php esc_attr_e( 'Primary', 'shapely' ); ?>">
 				<div class="container nav-bar">
 					<div class="flex-row">
 						<div class="module left site-title-container">
@@ -71,7 +71,7 @@ if ( 1 == $shapely_transparent_header && $shapely_transparent_header_opacity ) {
 							aria-expanded="false"
 							aria-controls="menu"
 							aria-label="<?php esc_attr_e( 'Toggle navigation menu', 'shapely' ); ?>">
-							<i class="fa fa-bars" aria-hidden="true"></i>
+							<i class="fa-solid fa-bars" aria-hidden="true"></i>
 						</button>
 						<div class="module-group right">
 							<div class="module left">
@@ -79,11 +79,11 @@ if ( 1 == $shapely_transparent_header && $shapely_transparent_header_opacity ) {
 							</div>
 							<!--end of menu module-->
 							<div class="module widget-handle search-widget-handle hidden-xs hidden-sm">
-								<button class="search">
-									<i class="fa fa-search"></i>
+								<button class="search" type="button" aria-label="<?php esc_attr_e( 'Site Search', 'shapely' ); ?>" aria-expanded="false" aria-controls="shapely-header-search">
+									<i class="fa-solid fa-search" aria-hidden="true"></i>
 									<span class="title"><?php esc_html_e( 'Site Search', 'shapely' ); ?></span>
 								</button>
-								<div class="function">
+								<div class="function" id="shapely-header-search">
 									<?php
 									get_search_form();
 									?>
@@ -97,11 +97,11 @@ if ( 1 == $shapely_transparent_header && $shapely_transparent_header_opacity ) {
 		</div>
 	</header><!-- #masthead -->
 	<div id="content" class="main-container">
-		<?php if ( ! is_page_template( 'page-templates/template-home.php' ) && ! is_404() && ! is_page_template( 'page-templates/template-widget.php' ) ) : ?>
+		<?php if ( ! is_page_template( array( 'page-templates/template-home.php', 'page-templates/template-widget.php', 'page-templates/template-blocks.php' ) ) && ! is_404() ) : ?>
 			<div class="header-callout">
 				<?php shapely_top_callout(); ?>
 			</div>
 		<?php endif; ?>
 
 		<section class="content-area <?php echo ( get_theme_mod( 'top_callout', true ) ) ? '' : ' pt0 '; ?>">
-			<div id="main" class="<?php echo ( ! is_page_template( 'page-templates/template-home.php' ) && ! is_page_template( 'page-templates/template-widget.php' ) ) ? 'container' : ''; ?>" role="main">
+			<div id="main" class="<?php echo ! is_page_template( array( 'page-templates/template-home.php', 'page-templates/template-widget.php', 'page-templates/template-blocks.php' ) ) ? 'container' : ''; ?>" role="main">

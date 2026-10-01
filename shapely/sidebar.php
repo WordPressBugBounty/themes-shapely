@@ -13,6 +13,6 @@ if ( ! is_active_sidebar( 'sidebar-1' ) || ! shapely_show_sidebar() ) {
 }
 ?>
 
-<aside id="secondary" class="widget-area col-md-4" role="complementary">
+<aside id="secondary" class="widget-area col-md-4" aria-label="<?php esc_attr_e( 'Sidebar', 'shapely' ); ?>">
 	<?php dynamic_sidebar( 'sidebar-1' ); ?>
 </aside><!-- #secondary -->

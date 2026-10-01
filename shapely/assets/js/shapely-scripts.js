@@ -14,6 +14,7 @@
     $('.shapely-dropdown').on('click', function (evt) {
       evt.preventDefault();
       $(this).parent().find('> ul').toggleClass('active');
+      $(this).attr('aria-expanded', $(this).parent().find('> ul').hasClass('active') ? 'true' : 'false');
       $(window).trigger('resize').trigger('scroll');
     });
 
@@ -38,7 +39,7 @@
         let scrollToID = $('#site-navigation #menu a[href="' + window.location.hash + '"]').data('scroll');
         scrollToID = scrollToID ? '#' + scrollToID : window.location.hash;
         scrollTarget = $(scrollToID);
-      } catch (e) {
+      } catch {
         return;
       }
 
@@ -46,12 +47,7 @@
         return;
       }
 
-      $('html,body').animate(
-        {
-          scrollTop: scrollTarget.offset().top,
-        },
-        2000
-      );
+      scrollToTarget(scrollTarget, 2000);
 
       newURL = window.location.href.replace(window.location.hash, '');
       window.history.replaceState({}, document.title, newURL);
@@ -60,14 +56,16 @@
     $('#site-navigation #menu a[href^="#"]:not([href="#"])').on('click', function (evt) {
       let target;
       try {
-        let scrollToID = '#' + $(this).data('scroll');
+        // shapely-companion gives section items a data-scroll id; a plain
+        // "#contact" custom link has none and scrolls to its own href.
+        let scrollToID = $(this).data('scroll') ? '#' + $(this).data('scroll') : '';
 
-        if ($(scrollToID).length > 1) {
+        if (!scrollToID || $(scrollToID).length < 1) {
           scrollToID = $(this).attr('href');
         }
 
         target = $(scrollToID);
-      } catch (e) {
+      } catch {
         return;
       }
 
@@ -76,12 +74,7 @@
       }
 
       evt.preventDefault();
-      $('html,body').animate(
-        {
-          scrollTop: target.offset().top,
-        },
-        2000
-      );
+      scrollToTarget(target, 2000);
     });
 
     $('.inner-link').on('click', function () {
@@ -97,6 +90,9 @@
     // Append .background-image-holder <img>'s as CSS backgrounds
     $('.background-image-holder').each(function () {
       let imgSrc = $(this).children('img').attr('src');
+      if (!imgSrc) {
+        return;
+      }
       $(this).css('background', 'url("' + imgSrc + '")');
       $(this).children('img').hide();
       $(this).css('background-position', 'initial');
@@ -121,6 +117,7 @@
 
       $(window).on('resize', function () {
         windowW = $(window).width();
+        clNavOuterHeight = clNav.outerHeight();
         if (windowW < 992) {
           clNav.removeClass('fixed scrolled outOfSight');
         } else {
@@ -130,9 +127,10 @@
       });
     }
 
-    // Menu dropdown positioning
+    // Menu dropdown positioning. Nested submenus are checked too, after their
+    // parent in document order, so they are measured where the parent now opens.
 
-    $('.menu > li > ul').each(function () {
+    $('.menu > li > ul, .menu > li > ul ul').each(function () {
       menu = $(this).offset();
       farRight = menu.left + $(this).outerWidth(true);
       if (farRight > $(window).width() && !$(this).hasClass('mega-menu')) {
@@ -157,6 +155,7 @@
 
     $('.module.widget-handle').on('click', function () {
       $(this).toggleClass('toggle-search');
+      $(this).children('.search').attr('aria-expanded', $(this).hasClass('toggle-search') ? 'true' : 'false');
       $(window).trigger('resize').trigger('scroll');
     });
 
@@ -308,8 +307,6 @@
           isVimeo = $(this).hasClass('vimeo'),
           videoId,
           mute,
-          instance,
-          self,
           autoplay,
           data,
           options,
@@ -320,7 +317,7 @@
           videoId = $(this).attr('data-video-id');
           autoplay = parseInt($(this).attr('data-autoplay'), 10);
           mute = parseInt($(this).attr('data-mute'), 10);
-          instance = $(this).YTPlayer({
+          $(this).YTPlayer({
             fitToBackground: true,
             videoId: videoId,
             mute: mute,
@@ -335,12 +332,6 @@
             playerlets: {
               rel: 0,
             },
-          });
-          self = $(this);
-
-          $(document).on('YTBGREADY', function () {
-            let iframe = self.find('iframe'),
-              height = iframe.height();
           });
 
           $(play).on('click', function (e) {
@@ -411,29 +402,29 @@
     $('.comment-form').find('textarea').insertAfter($('.comment-form > #url'));
 
     if ('undefined' !== typeof $.fn.owlCarousel) {
-      $('.owlCarousel').each(function (index) {
-        let sliderSelector = '#owlCarousel-' + $(this).data('slider-id'); // This is the slider selector
-        let sliderItems = $(this).data('slider-items');
-        let sliderSpeed = $(this).data('slider-speed');
-        let sliderAutoPlay = $(this).data('slider-auto-play');
-        let sliderSingleItem = $(this).data('slider-single-item');
+      $('.owlCarousel').each(function () {
+        let $slider = $(this);
+        let sliderItems = $slider.data('slider-items');
+        let sliderSpeed = $slider.data('slider-speed');
+        let sliderAutoPlay = $slider.data('slider-auto-play');
 
         //Conversion of 1 to true & 0 to false
         // auto play
         sliderAutoPlay = !(0 === sliderAutoPlay || 'false' === sliderAutoPlay);
 
-        // Custom Navigation events outside of the owlCarousel mark-up
-        $('.shapely-owl-next').on('click', function (event) {
+        // The arrows sit beside the carousel rather than inside it. Binding
+        // them page-wide meant each carousel on the page moved every other one.
+        $slider.parent().find('.shapely-owl-next').on('click', function (event) {
           event.preventDefault();
-          $(sliderSelector).trigger('next.owl.carousel');
+          $slider.trigger('next.owl.carousel');
         });
-        $('.shapely-owl-prev').on('click', function (event) {
+        $slider.parent().find('.shapely-owl-prev').on('click', function (event) {
           event.preventDefault();
-          $(sliderSelector).trigger('prev.owl.carousel');
+          $slider.trigger('prev.owl.carousel');
         });
 
         // Instantiate the slider with all the options
-        $(sliderSelector).owlCarousel({
+        $slider.owlCarousel({
           items: sliderItems,
           loop: false,
           margin: 2,
@@ -485,10 +476,15 @@
     }
   });
 
-  $(window).on('load', function () {
-    // "use strict";
+  /*
+   * Runs once the page has loaded. A "delay JavaScript" optimiser can run
+   * this file after the load event has already fired, and a handler bound
+   * then never runs -- which left the .masonry grid, hidden until it is laid
+   * out, invisible.
+   */
+  function onPageLoad() {
     // Resetting testimonial parallax height
-    let msnry, container, clFirstSectionHeight;
+    let msnry, container;
     if (0 !== $('.testimonial-section').length) {
       testimonialHeight();
       setTimeout(function () {
@@ -504,7 +500,6 @@
       });
 
       msnry.on('layoutComplete', function () {
-        clFirstSectionHeight = $('.main-container section:nth-of-type(1)').outerHeight(true);
         $('.masonry').addClass('fadeIn');
         $('.masonry-loader').addClass('fadeOut');
         if ($('.masonryFlyIn').length) {
@@ -514,10 +509,40 @@
 
       msnry.layout();
     }
+  }
 
-    // Navigation height
-    clFirstSectionHeight = $('.main-container section:nth-of-type(1)').outerHeight(true);
-  });
+  if ('complete' === document.readyState) {
+    $(onPageLoad);
+  } else {
+    $(window).on('load', onPageLoad);
+  }
+
+  /*
+   * Scroll a section to just below the header.
+   *
+   * With the sticky header on, the header turns position: fixed partway down,
+   * which pulls the content up under it: the scroll used to stop about 20px
+   * short, with the section's top hidden behind the header. The offset allows
+   * for the fixed header, and the position is corrected once the header has
+   * settled.
+   */
+  function scrollToTarget($target, duration) {
+    let destination = function () {
+      let offset = 0;
+      if (clNav && clNav.length && $(window).width() > 991) {
+        offset = clNav.outerHeight();
+      }
+      return Math.max(0, Math.round($target.offset().top - offset));
+    };
+
+    $('html,body')
+      .stop(true)
+      .animate({ scrollTop: destination() }, duration, function () {
+        if (Math.abs($(window).scrollTop() - destination()) > 1) {
+          $('html,body').scrollTop(destination());
+        }
+      });
+  }
 
   /* Function To
    * keep menu fixed

@@ -4,12 +4,16 @@
 
   var api = wp.customize;
 
-  api(function() {
+  /*
+   * wp.customize( callback ) with a lone argument is an id lookup, not a ready
+   * handler, so this callback never ran and the Builder page's widget section
+   * was never opened for you.
+   */
+  api.bind( 'ready', function() {
     var currentURL = api.settings.url.preview,
         urlBase,
         urlParts,
-        pageSidebarID,
-        pageSidebarSection;
+        pageSidebarID;
     if ( currentURL !== ShapelyBuilder.siteURL ) {
       urlParts = currentURL.split( '/' );
       urlParts.pop();
@@ -22,10 +26,11 @@
          * 2. The instance is embedded in the document (and so is focusable).
          * 3. The preview has finished loading so that the active states have been set.
          */
-        pageSidebarSection = api.section( pageSidebarID, function( instance ) {
+        api.section( pageSidebarID, function( instance ) {
           instance.deferred.embedded.done( function() {
             api.previewer.deferred.active.done( function() {
-              instance.trigger('focus');
+              // A section is not a jQuery object; it has no trigger().
+              instance.focus();
             } );
           } );
         } );

@@ -14,25 +14,25 @@
 		<header class="entry-header">
 			<?php
 			if ( has_post_thumbnail() ) {
-				$layout = shapely_get_layout_class();
-				$size   = 'shapely-featured';
+				$shapely_layout = shapely_get_layout_class();
+				$shapely_size   = 'shapely-featured';
 
-				if ( 'full-width' == $layout ) {
-					$size = 'shapely-full';
+				if ( 'full-width' === $shapely_layout ) {
+					$shapely_size = 'shapely-full';
 				}
-				$image = get_the_post_thumbnail( get_the_ID(), $size );
+				$shapely_image = get_the_post_thumbnail( get_the_ID(), $shapely_size );
 			} else {
 				/*
 				 * Was a hardcoded <img alt=""> that ignored the placeholder
 				 * customizer settings and gave the wrapping link no accessible
 				 * name. shapely_get_thumbnail() honours the settings and sets alt.
 				 */
-				$image = shapely_get_thumbnail( 'shapely-featured', 'placeholder_wide.jpg' );
+				$shapely_image = shapely_get_thumbnail( 'shapely-featured', 'placeholder_wide.jpg' );
 			}
 			?>
-			<?php if ( ! empty( $image ) ) : ?>
+			<?php if ( ! empty( $shapely_image ) ) : ?>
 			<a href="<?php echo esc_url( get_the_permalink() ); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
-				<?php echo wp_kses( $image, shapely_image_allowed_html() ); ?>
+				<?php echo wp_kses( $shapely_image, shapely_image_allowed_html() ); ?>
 			</a>
 			<?php endif; ?>
 

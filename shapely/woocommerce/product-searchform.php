@@ -13,5 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Use WordPress core search form
-get_search_form();
+/*
+ * The theme's search form, restricted to products. This used to print the
+ * plain site search, so the WooCommerce product search widget returned blog
+ * posts and pages as well.
+ */
+$shapely_form = get_search_form( array( 'echo' => false ) );
+echo str_replace( '</form>', '<input type="hidden" name="post_type" value="product" /></form>', $shapely_form ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built and escaped by shapely_search_form().

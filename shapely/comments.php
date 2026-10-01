@@ -24,21 +24,23 @@ if ( post_password_required() ) {
 	<?php if ( have_comments() ) : ?>
 		<h5 class="comments-title">
 			<?php
-			$comments_number = get_comments_number();
-			if ( '1' === $comments_number ) {
+			$shapely_comments_number = get_comments_number();
+			if ( '1' === $shapely_comments_number ) {
 				/* translators: %s: post title */
-				echo _x( '1 COMMENT', 'comments title', 'shapely' );
+				echo esc_html_x( '1 COMMENT', 'comments title', 'shapely' );
 			} else {
 				printf(
-					/* translators: number of comments */
-					_nx(
-						'%1$s COMMENT',
-						'%1$s COMMENTS',
-						$comments_number,
-						'comments title',
-						'shapely'
+					esc_html(
+						/* translators: %1$s: number of comments */
+						_nx(
+							'%1$s COMMENT',
+							'%1$s COMMENTS',
+							$shapely_comments_number,
+							'comments title',
+							'shapely'
+						)
 					),
-					number_format_i18n( $comments_number )
+					esc_html( number_format_i18n( $shapely_comments_number ) )
 				);
 			}
 			?>
@@ -89,16 +91,16 @@ if ( post_password_required() ) {
 
 
 	// If comments are closed and there are comments, let's leave a little note, shall we?
-if ( ! comments_open() && get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
-?>
+	if ( ! comments_open() && get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) :
+		?>
 
 		<p class="no-comments"><?php esc_html_e( 'Comments are closed.', 'shapely' ); ?></p>
 		<?php
 	endif;
 
 	/* comment form */
-	$comments_args = shapely_custom_comment_form();
-	comment_form( $comments_args );
+	$shapely_comments_args = shapely_custom_comment_form();
+	comment_form( $shapely_comments_args );
 	?>
 
 </div><!-- #comments -->

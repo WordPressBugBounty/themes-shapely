@@ -65,7 +65,8 @@ if ( ! class_exists( 'Shapely_Migrations' ) ) :
 				self::migrate_to_130();
 			}
 
-			update_option( self::VERSION_OPTION, SHAPELY_VERSION, false );
+			// Autoloaded: this is read on every request, front end included.
+			update_option( self::VERSION_OPTION, SHAPELY_VERSION, true );
 		}
 
 		/**
@@ -84,10 +85,17 @@ if ( ! class_exists( 'Shapely_Migrations' ) ) :
 				}
 			}
 
-			// Or any saved customizer value.
+			/*
+			 * Or any saved customizer value. Not the keys core writes itself:
+			 * switch_theme() copies the previous theme's menu locations into
+			 * the new theme's mods, so anyone arriving from a theme with a menu
+			 * assigned looked established and never saw the welcome notice.
+			 */
 			$mods = get_theme_mods();
 			if ( is_array( $mods ) ) {
-				unset( $mods['0'] );
+				foreach ( array( '0', 'nav_menu_locations', 'sidebars_widgets', 'custom_css_post_id', 'wp_classic_sidebars' ) as $core_key ) {
+					unset( $mods[ $core_key ] );
+				}
 				if ( ! empty( $mods ) ) {
 					return true;
 				}
@@ -130,7 +138,7 @@ if ( ! class_exists( 'Shapely_Migrations' ) ) :
 			 * change nothing.
 			 */
 			if ( self::looks_established() ) {
-				update_option( 'shapely_welcome_notice_dismissed', 1, false );
+				update_option( 'shapely_welcome_notice_dismissed', 1, true );
 			}
 		}
 	}

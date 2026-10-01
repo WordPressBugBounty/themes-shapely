@@ -10,7 +10,8 @@ get_header(); ?>
 			while ( have_posts() ) :
 				the_post();
 
-				get_template_part( 'template-parts/content' );
+				// These templates also apply to posts; a page keeps the page layout.
+				get_template_part( 'template-parts/content', is_page() ? 'page' : '' );
 
 				// If comments are open or we have at least one comment, load up the comment template.
 				if ( comments_open() || get_comments_number() ) :

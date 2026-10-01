@@ -11,6 +11,6 @@ while ( have_posts() ) :
 	 */
 	?> 
 	<?php get_template_part( 'template-parts/content', 'grid-wide' ); ?>
-<?php
+	<?php
 endwhile;
 

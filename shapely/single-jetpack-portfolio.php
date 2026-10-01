@@ -8,14 +8,14 @@
  */
 
 get_header(); ?>
-<?php $layout_class = shapely_get_layout_class(); ?>
+<?php $shapely_layout_class = shapely_get_layout_class(); ?>
 	<div class="row">
 		<?php
-		if ( 'sidebar-left' == $layout_class ) :
+		if ( 'sidebar-left' === $shapely_layout_class ) :
 			get_sidebar();
 		endif;
 		?>
-		<div id="primary" class="col-md-8 mb-xs-24 <?php echo esc_attr( $layout_class ); ?>">
+		<div id="primary" class="col-md-8 mb-xs-24 <?php echo esc_attr( $shapely_layout_class ); ?>">
 																<?php
 																while ( have_posts() ) :
 																	the_post();
@@ -28,10 +28,10 @@ get_header(); ?>
 																		endif;
 
 			endwhile; // End of the loop.
-			?>
+																?>
 		</div><!-- #primary -->
 		<?php
-		if ( 'sidebar-right' == $layout_class ) :
+		if ( 'sidebar-right' === $shapely_layout_class ) :
 			get_sidebar();
 		endif;
 		?>

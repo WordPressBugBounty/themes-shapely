@@ -7,22 +7,27 @@
  * @package Shapely
  */
 get_header();
-$layout_class = shapely_get_layout_class(); ?>
+$shapely_layout_class = shapely_get_layout_class(); ?>
 	<div class="row">
 		<?php
-		if ( 'sidebar-left' == $layout_class ) :
+		if ( 'sidebar-left' === $shapely_layout_class ) :
 			get_sidebar();
 		endif;
 		?>
-		<section id="primary" class="content-area col-md-8 mb-xs-24 <?php echo esc_attr( $layout_class ); ?>">
+		<section id="primary" class="content-area col-md-8 mb-xs-24 <?php echo esc_attr( $shapely_layout_class ); ?>">
 			<div class="site-main">
 
 				<?php
 				if ( have_posts() ) :
-				?>
+					?>
 
 					<header class="entry-header nolist">
-						<h1 class="post-title entry-title"><?php printf( esc_html__( 'Search Results for: %s', 'shapely' ), '<span>' . get_search_query() . '</span>' ); ?></h1>
+						<h1 class="post-title entry-title">
+							<?php
+							/* translators: %s: search query */
+							printf( esc_html__( 'Search Results for: %s', 'shapely' ), '<span>' . esc_html( get_search_query( false ) ) . '</span>' );
+							?>
+						</h1>
 					</header><!-- .page-header -->
 
 					<?php
@@ -51,7 +56,7 @@ $layout_class = shapely_get_layout_class(); ?>
 		</section><!-- #primary -->
 
 		<?php
-		if ( 'sidebar-right' == $layout_class ) :
+		if ( 'sidebar-right' === $shapely_layout_class ) :
 			get_sidebar();
 		endif;
 		?>

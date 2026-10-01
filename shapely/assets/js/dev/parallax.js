@@ -134,7 +134,8 @@
       overflow: 'hidden'
     });
 
-    this.$slider.addClass('parallax-slider').one('load', function() {
+    // Shapely: the mirror is a decorative copy of the section background.
+    this.$slider.addClass('parallax-slider').attr({ alt: '', 'aria-hidden': 'true' }).one('load', function() {
       if (!self.naturalHeight || !self.naturalWidth) {
         self.naturalHeight = this.naturalHeight || this.height || 1;
         self.naturalWidth  = this.naturalWidth  || this.width  || 1;

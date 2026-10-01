@@ -6,7 +6,7 @@
 		global $wp_query;
 		while ( have_posts() ) :
 			the_post();
-			$i = $wp_query->current_post + 1;
+			$shapely_post_index = $wp_query->current_post + 1;
 			/*
 			 * Include the Post-Format-specific template for the content.
 			 * If you want to override this in a child theme, then include a file
@@ -14,9 +14,9 @@
 			 */
 			get_template_part( 'template-parts/content', 'grid-small' );
 
-			if ( fmod( $i, (int) 2 ) == 0 && $i != (int) $wp_query->post_count ) {
+			if ( 0 === $shapely_post_index % 2 && (int) $wp_query->post_count !== $shapely_post_index ) {
 				echo '</div><div class="row">';
-			} elseif ( $i == (int) $wp_query->post_count ) {
+			} elseif ( (int) $wp_query->post_count === $shapely_post_index ) {
 				continue;
 			}
 		endwhile;

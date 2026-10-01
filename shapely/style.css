@@ -4,9 +4,9 @@ Theme URI: https://colorlib.com/wp/themes/shapely/
 Author: Colorlib
 Author URI: https://colorlib.com
 Description: Shapely is a one-page WordPress theme for business, portfolio and small e-commerce sites. The front page is assembled from widgets, so you can stack parallax sections, a portfolio grid, testimonials, a client logo carousel, a call to action and a contact block in whatever order you need. It also ships conventional blog templates with a choice of left, right, full-width or no sidebar, four footer widget areas, and a social icon menu. WooCommerce and Jetpack are supported, and the theme is translation ready.
-Version: 1.3.6
+Version: 1.3.7
 Requires at least: 6.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 License: GNU General Public License v3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -51,12 +51,6 @@ Nicolas Gallagher and Jonathan Neal https://necolas.github.com/normalize.css/
 /*--------------------------------------------------------------
 # Normalize
 --------------------------------------------------------------*/
-
-html {
-  font-family: sans-serif;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-}
 
 body {
   margin: 0;
@@ -164,14 +158,11 @@ hr {
   height: 0;
 }
 
-pre {
-  overflow: auto;
-}
-
 code,
 kbd,
 pre,
 samp {
+  /* stylelint-disable-next-line font-family-no-duplicate-names -- normalize.css: the repeated family stops browsers shrinking monospace text */
   font-family: monospace, monospace;
   font-size: 1em;
 }
@@ -256,11 +247,6 @@ textarea {
 
 optgroup {
   font-weight: bold;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
 }
 
 td,
@@ -353,6 +339,9 @@ big {
 --------------------------------------------------------------*/
 
 html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
   box-sizing: border-box;
 }
 
@@ -363,6 +352,7 @@ html {
   box-sizing: inherit;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 body {
   background: #fff;
   /* Fallback for when there is no custom background color defined. */
@@ -380,6 +370,7 @@ q {
   quotes: '' '';
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 hr {
   border: 0;
   height: 1px;
@@ -389,10 +380,6 @@ hr {
 ul,
 ol {
   margin: 0 0 1.5em 3em;
-}
-
-ul {
-  list-style: disc;
 }
 
 ol {
@@ -413,6 +400,7 @@ dd {
   margin: 0 1.5em 1.5em;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 img {
   height: auto;
   /* Make sure images are scaled correctly. */
@@ -421,6 +409,8 @@ img {
 }
 
 table {
+  border-collapse: collapse;
+  border-spacing: 0;
   margin: 0 0 1.5em;
   width: 100%;
 }
@@ -509,6 +499,7 @@ input[type='color'] {
   padding: 3px;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 textarea {
   padding-left: 3px;
   width: 100%;
@@ -524,7 +515,7 @@ textarea {
 
 a,
 a:visited {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
   font-weight: 600;
   cursor: pointer;
 }
@@ -535,13 +526,14 @@ a:active {
 
 a:hover,
 a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 a:focus {
   outline: thin dotted;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 a:hover,
 a:active {
   outline: 0;
@@ -604,18 +596,6 @@ a:hover {
   width: 100%;
 }
 
-.main-navigation li:hover > a,
-.main-navigation li.focus > a {
-}
-
-.main-navigation ul ul:hover > a,
-.main-navigation ul ul .focus > a {
-}
-
-.main-navigation ul ul a:hover,
-.main-navigation ul ul a.focus {
-}
-
 .main-navigation ul li:hover > ul,
 .main-navigation ul li.focus > ul {
   left: auto;
@@ -624,12 +604,6 @@ a:hover {
 .main-navigation ul ul li:hover > ul,
 .main-navigation ul ul li.focus > ul {
   left: 100%;
-}
-
-.main-navigation .current_page_item > a,
-.main-navigation .current-menu-item > a,
-.main-navigation .current_page_ancestor > a,
-.main-navigation .current-menu-ancestor > a {
 }
 
 /* Small menu. */
@@ -783,10 +757,31 @@ a:hover {
 .post-content .alignwide {
   /* content_width is 1140px; step outside the column but not to the edge. */
   max-width: 1140px;
+  /* stylelint-disable declaration-block-no-duplicate-properties -- the calc() pair is the fallback for browsers without max() */
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   margin-left: max(calc(50% - 50vw), calc((100% - 1140px) / 2));
   margin-right: max(calc(50% - 50vw), calc((100% - 1140px) / 2));
+  /* stylelint-enable declaration-block-no-duplicate-properties */
+}
+
+/*
+ * Beside a sidebar the column is off-centre, so the break-out above would
+ * run the block over the sidebar and off the far edge of the screen. Wide
+ * and full blocks fill the column instead.
+ */
+.sidebar-left .entry-content .alignfull,
+.sidebar-left .post-content .alignfull,
+.sidebar-left .entry-content .alignwide,
+.sidebar-left .post-content .alignwide,
+.sidebar-right .entry-content .alignfull,
+.sidebar-right .post-content .alignfull,
+.sidebar-right .entry-content .alignwide,
+.sidebar-right .post-content .alignwide {
+  width: auto;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* A full-width block should not inherit the column's inner padding. */
@@ -1056,13 +1051,14 @@ object {
  23. Other
 /*!---------- 1. GLOBAL STYLES ----------*/
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
   line-height: 24px;
   font-family: Raleway, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   overflow-x: hidden;
   font-weight: 400;
 }
@@ -1075,6 +1071,7 @@ ul {
   clear: both;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 hr {
   border: none;
   border-top: 1px solid #ccc;
@@ -1176,6 +1173,7 @@ input {
   padding: 0;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 h1,
 h2,
 h3,
@@ -1185,6 +1183,7 @@ h6 {
   font-family: inherit;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 h1,
 h2,
 h3,
@@ -1195,6 +1194,7 @@ h6 {
   color: #0e1015;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 h1 {
   font-size: 60px;
   line-height: 64px;
@@ -1290,10 +1290,6 @@ p.lead {
   }
 }
 
-.image-bg a {
-  color: #fff;
-}
-
 .image-bg a:hover,
 .image-bg a:focus {
   color: #fff;
@@ -1333,6 +1329,7 @@ blockquote p:last-child:after {
   }
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 th,
 td {
   line-height: 24px !important;
@@ -1341,7 +1338,7 @@ td {
 /*!---------- 4. COLOURS ----------*/
 
 .bg-primary {
-  background: #745cf9 !important;
+  background: var(--wp--preset--color--primary, #745cf9) !important;
 }
 
 .bg-secondary {
@@ -1361,12 +1358,43 @@ footer {
   overflow: hidden;
 }
 
-.page-template-page-templatestemplate-home-php .content-area {
+.page-template-page-templatestemplate-home-php .content-area,
+.page-template-page-templatestemplate-blocks-php .content-area {
   padding: 0;
+}
+
+/*
+ * Blocks template: content at full width with no container, so full-width
+ * blocks reach the screen edge. Other blocks keep to the content width.
+ */
+.shapely-blocks .entry-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.shapely-blocks .entry-content > :not(.alignfull):not(.alignwide):not(.alignleft):not(.alignright) {
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.shapely-blocks .entry-content > .alignfull {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 footer {
   padding: 72px 0;
+}
+
+/*
+ * The two rules above are for page sections and the site footer, but they
+ * match every <footer> element. The Latest Comments block marks up each
+ * comment's byline as one, which gave every entry 144px of padding.
+ */
+.wp-block-latest-comments__comment-meta {
+  padding: 0;
+  overflow: visible;
 }
 
 .fullscreen {
@@ -1442,7 +1470,7 @@ footer.bg-dark li {
 .btn,
 .button {
   font-family: inherit;
-  border: 2px solid #745cf9;
+  border: 2px solid var(--wp--preset--color--button, #745cf9);
   padding: 0 26px;
   min-width: 150px;
   line-height: 36px;
@@ -1451,7 +1479,7 @@ footer.bg-dark li {
   text-transform: uppercase;
   letter-spacing: 1px;
   border-radius: 0;
-  color: #745cf9;
+  color: var(--wp--preset--color--button, #745cf9);
   text-align: center;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
@@ -1470,7 +1498,7 @@ footer.bg-dark li {
 .button:hover,
 .btn:focus,
 .button:focus {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
 }
 
@@ -1499,7 +1527,7 @@ a .btn-filled,
 .woocommerce a.button,
 .woocommerce button.button,
 .woocommerce input.button {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
 }
 
@@ -1518,9 +1546,9 @@ a .btn-filled,
 }
 
 .image-bg .btn.btn-filled {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
-  border-color: #745cf9;
+  border-color: var(--wp--preset--color--button, #745cf9);
 }
 
 .btn-white:hover,
@@ -1552,13 +1580,13 @@ a .btn-filled,
 .woocommerce a.button:focus,
 .woocommerce button.button:focus,
 .woocommerce input.button:focus {
-  background: #5d47d7;
-  border-color: #5d47d7;
+  background: var(--wp--preset--color--button-hover, #5d47d7);
+  border-color: var(--wp--preset--color--button-hover, #5d47d7);
   color: #fff;
 }
 
 .btn:visited {
-  color: #745cf9;
+  color: var(--wp--preset--color--button, #745cf9);
 }
 
 .btn-white:visited,
@@ -1587,13 +1615,13 @@ a .btn-filled,
 .btn:visited:hover,
 .btn-filled:focus,
 .btn:visited:focus {
-  background: #5d47d7;
-  border-color: #5d47d7;
+  background: var(--wp--preset--color--button-hover, #5d47d7);
+  border-color: var(--wp--preset--color--button-hover, #5d47d7);
 }
 
 input[type='submit']:hover,
 input[type='submit']:focus {
-  background-color: #5d47d7;
+  background-color: var(--wp--preset--color--button-hover, #5d47d7);
   color: #fff;
 }
 
@@ -1607,11 +1635,7 @@ input[type='submit']:focus {
 .nav-container {
   -webkit-backface-visibility: hidden;
   max-width: 100%;
-}
-
-nav {
-  -webkit-backface-visibility: hidden;
-  max-width: 100%;
+  min-height: 56px;
 }
 
 nav ul {
@@ -1647,6 +1671,8 @@ nav .btn,
 }
 
 nav {
+  -webkit-backface-visibility: hidden;
+  max-width: 100%;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   background-color: rgba(255, 255, 255, 1);
 }
@@ -1725,6 +1751,14 @@ nav {
 
 .shapely-dropdown {
   display: none;
+  /* A <button> since 1.3.7; look like the <span> it replaced. */
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
 }
 
 .main-navigation .menu {
@@ -1751,7 +1785,7 @@ nav {
 .main-navigation .menu li:focus > a,
 .main-navigation .menu > li:hover:after,
 .main-navigation .menu > li:focus:after {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .main-navigation .menu > li {
@@ -1813,6 +1847,30 @@ nav {
   top: 0;
 }
 
+/*
+ * A dropdown that would run past the right edge of the window opens leftwards.
+ * shapely-scripts.js has added .make-right to such menus since 2016, but the
+ * rule it relies on never came over from the template the theme was built
+ * from -- so the last menu item's dropdown stuck out of the window and gave
+ * every page a horizontal scrollbar, open or not.
+ */
+@media all and (min-width: 992px) {
+  .site-header:not(.mobile-menu) .main-navigation .menu > li > ul.make-right {
+    left: auto;
+    right: 0;
+  }
+
+  .site-header:not(.mobile-menu) .main-navigation .menu > li > ul ul.make-right {
+    left: auto;
+    right: 100%;
+  }
+
+  /* Point the item's arrow the way its submenu now opens. */
+  .site-header:not(.mobile-menu) .main-navigation .menu > li > ul li.menu-item-has-children:has(> ul.make-right):after {
+    content: "\f104"; /* fa-angle-left */
+  }
+}
+
 .main-navigation .menu > li:hover > ul,
 .main-navigation .menu > li:focus-within > ul {
   opacity: 1;
@@ -1854,7 +1912,7 @@ nav {
 
   body .main-navigation .menu > li > ul li:hover > a,
   body .main-navigation .menu > li > ul li:focus > a {
-    color: #8c979e;
+    color: var(--wp--preset--color--body, #67727a);
   }
 }
 
@@ -1888,10 +1946,6 @@ nav {
     text-overflow: ellipsis;
     max-width: 249px;
   }
-}
-
-.nav-container {
-  min-height: 56px;
 }
 
 nav.outOfSight {
@@ -1928,14 +1982,12 @@ nav.fixed {
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
-}
-
-nav.fixed {
   position: fixed;
   visibility: hidden;
   opacity: 0;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 nav.fixed.scrolled {
   visibility: visible;
   opacity: 1;
@@ -2014,10 +2066,6 @@ nav.fixed.scrolled {
 }
 
 /* Specific styling for the search widget handle */
-.search-widget-handle .search {
-  background: transparent;
-  border: none;
-}
 
 .widget-handle .function {
   -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -2088,6 +2136,7 @@ nav.fixed.scrolled {
   margin: 0;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .widget-handle .function {
   background: #fff;
   width: 300px;
@@ -2120,7 +2169,7 @@ nav.fixed.scrolled {
 
 .btn.searchsubmit:hover,
 .btn.searchsubmit:focus {
-  background-color: #5d47d7;
+  background-color: var(--wp--preset--color--button-hover, #5d47d7);
   color: #fff;
 }
 
@@ -2160,16 +2209,14 @@ nav.fixed.scrolled {
   width: auto;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .main-navigation .menu > li ul {
   background: #fff;
 }
 
-.main-navigation .menu > li ul {
-  background: #fff;
-}
-
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .main-navigation .menu > li > ul li a {
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   width: 100%;
   font-size: 14px;
   text-transform: none;
@@ -2181,7 +2228,7 @@ nav.fixed.scrolled {
 .main-navigation .menu > li > ul li a:focus,
 .main-navigation .menu > li > ul li:focus > a {
   background: #f8f8f8;
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .main-navigation .menu > li > ul li:hover > a,
@@ -2197,7 +2244,7 @@ nav.fixed.scrolled {
 
 .main-navigation .menu > li > ul .dropdown:hover:after,
 .main-navigation .menu > li > ul .dropdown:focus:after {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 /* Widget Menu */
@@ -2567,6 +2614,7 @@ input[type='password'] {
   outline: 1px solid #ccc;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 textarea {
   width: 100%;
   background: #f5f5f5;
@@ -2619,9 +2667,9 @@ button.transparent:-ms-input-placeholder {
 
 input[type='submit'],
 button[type='submit'] {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   border-radius: 0 !important;
-  border: 2px solid #745cf9;
+  border: 2px solid var(--wp--preset--color--button, #745cf9);
   color: #fff;
   font-size: 11px;
   font-weight: bold;
@@ -2640,7 +2688,7 @@ button[type='submit'] {
 
 .bg-primary input[type='submit'] {
   background: #fff;
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 /*!---------- 9. BREADCRUMBS ----------*/
@@ -2698,9 +2746,9 @@ button[type='submit'] {
 .woocommerce nav.woocommerce-pagination ul li a:focus,
 .woocommerce nav.woocommerce-pagination ul li a:hover,
 .woocommerce nav.woocommerce-pagination ul li span.current {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
-  border-color: #745cf9;
+  border-color: var(--wp--preset--color--button, #745cf9);
 }
 
 .pagination a:hover,
@@ -2708,9 +2756,9 @@ button[type='submit'] {
 .pagination .active a,
 .pagination .active:hover a,
 .pagination .active:focus a {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
-  border-color: #745cf9;
+  border-color: var(--wp--preset--color--button, #745cf9);
 }
 
 /*!---------- 11. ICON FEATURES ----------*/
@@ -2726,7 +2774,7 @@ button[type='submit'] {
 .feature-1 i {
   display: inline-block;
   margin-bottom: 16px;
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .page-title {
@@ -2741,6 +2789,7 @@ button[type='submit'] {
   padding: 0;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .widget {
   margin-bottom: 0;
 }
@@ -2784,7 +2833,7 @@ button[type='submit'] {
 }
 
 .jetpack_subscription_widget form {
-  background: #745cf9;
+  background: var(--wp--preset--color--primary, #745cf9);
   color: #fff;
   padding: 24px;
 }
@@ -2816,7 +2865,7 @@ button[type='submit'] {
 
 .jetpack_subscription_widget #subscribe-submit input {
   background: #fff;
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
   padding: 0;
 }
 
@@ -2834,6 +2883,7 @@ button[type='submit'] {
 
 /*!---------- 13. IMAGE TILES ----------*/
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 img {
   max-width: 100%;
 }
@@ -2881,15 +2931,12 @@ img {
   z-index: 5;
 }
 
-.inner-title .title h5 {
-  color: #fff;
-}
-
 .inner-title .title span {
   color: #fff;
 }
 
 .inner-title .title h5 {
+  color: #fff;
   font-weight: 600;
 }
 
@@ -2933,6 +2980,27 @@ img {
   opacity: 1;
 }
 
+/* A project with no featured image: a plain tile with its title showing. */
+.image-tile.no-thumbnail {
+  min-height: 200px;
+  background-color: #f5f5f5;
+}
+
+.image-tile.no-thumbnail .title {
+  top: 50%;
+  opacity: 1;
+  transform: translate3d(0, -50%, 0);
+}
+
+.image-tile.no-thumbnail .title h5 {
+  color: #001c28;
+}
+
+/* Jetpack Infinite Scroll replaces the numbered pages. */
+.infinite-scroll #primary .pagination {
+  display: none;
+}
+
 @media all and (max-width: 768px) {
   .inner-title:before {
     transform: scale(1.2);
@@ -2960,9 +3028,6 @@ img {
 
 .logo-carousel li {
   text-align: center;
-}
-
-.logo-carousel li {
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -3185,7 +3250,7 @@ iframe {
 .masonry-item blockquote:hover,
 .masonry-item blockquote:focus,
 .masonry-item blockquote:focus-within {
-  background: #745cf9;
+  background: var(--wp--preset--color--primary, #745cf9);
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -3236,7 +3301,7 @@ iframe {
 .spinner {
   width: 50px;
   height: 50px;
-  background-color: #745cf9;
+  background-color: var(--wp--preset--color--primary, #745cf9);
   margin: 0 auto;
   display: inline-block;
   transition: all 0.3s ease;
@@ -3346,7 +3411,7 @@ iframe {
 }
 
 .image-bg .text-slider .flex-direction-nav li a:focus:before {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .text-slider .flex-direction-nav a.flex-prev {
@@ -3364,7 +3429,7 @@ iframe {
   font-size: 1.2em;
   line-height: 155%;
   font-weight: 700;
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .content blockquote {
@@ -3459,9 +3524,6 @@ iframe {
 
 .content th {
   padding-top: 0;
-}
-
-.content th {
   font-weight: bold;
   color: #111;
 }
@@ -3502,6 +3564,7 @@ iframe {
   padding: 70px 0;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .page-title {
   margin-bottom: 0 !important;
 }
@@ -3602,7 +3665,7 @@ footer.bg-dark a {
 
 .bg-dark .social-list a:hover,
 .bg-dark .social-list a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .back-to-top {
@@ -3675,7 +3738,7 @@ footer.bg-dark a {
 
 .footer .footer-credits a:hover,
 .footer .footer-credits a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 /*!---------- 22. SPACING ----------*/
@@ -3728,10 +3791,6 @@ footer.bg-dark a {
   padding-bottom: 0 !important;
 }
 
-.pt0 {
-  padding-top: 0;
-}
-
 @media all and (max-width: 767px) {
   .mb-xs-24 {
     margin-bottom: 24px;
@@ -3748,6 +3807,7 @@ footer.bg-dark a {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .feature-1 i {
   font-size: 64px;
 }
@@ -3767,6 +3827,7 @@ footer.bg-dark a {
   padding: 96px 0;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .social-list {
   font-size: 18px;
 }
@@ -3781,7 +3842,7 @@ footer.bg-dark a {
 }
 
 .image-bg a {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .widget-area section {
@@ -3790,10 +3851,6 @@ footer.bg-dark a {
 }
 
 /* Layout */
-
-.has-sidebar-left #secondary {
-  padding-right: 40px;
-}
 
 .no-sidebar {
   float: none;
@@ -3808,20 +3865,20 @@ footer.bg-dark a {
   display: block;
 }
 
-#social {
+:is(#social, #social-2, #social-3) {
   background: transparent;
   float: right;
 }
-.shapely-social-links #social {
+.shapely-social-links :is(#social, #social-2, #social-3) {
   display: inline-block;
   float: none;
   margin-top: 20px;
   border: 0 none;
 }
-.shapely-social-links #social ul {
+.shapely-social-links :is(#social, #social-2, #social-3) ul {
   padding-left: 0;
 }
-.shapely-social-links #social ul.list-inline > li:last-child {
+.shapely-social-links :is(#social, #social-2, #social-3) ul.list-inline > li:last-child {
   padding-right: 10px;
 }
 #secondary .shapely-social-links h3.cfa-text {
@@ -3830,48 +3887,38 @@ footer.bg-dark a {
   color: #001c28;
 }
 
-.contact-section #social {
+.contact-section :is(#social, #social-2, #social-3) {
   float: none;
   border-bottom: 0 none;
 }
 
-#social li {
+:is(#social, #social-2, #social-3) li {
   display: inline-block;
 }
 
-#social li,
-#social ul {
+:is(#social, #social-2, #social-3) li,
+:is(#social, #social-2, #social-3) ul {
   border: 0 !important;
   list-style: none;
   padding-left: 10px;
   text-align: center;
 }
 
-.contact-section #social ul {
+.contact-section :is(#social, #social-2, #social-3) ul {
   text-align: left;
 }
 
 .contact-section .social-icons li a {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .contact-section .social-icons li a:hover,
 .contact-section .social-icons li a:focus {
-  color: #5d47d7;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
-#social .social_icon span {
+:is(#social, #social-2, #social-3) .social_icon span {
   display: none;
-}
-
-.header-image-bg {
-  background-size: cover;
-  position: relative;
-}
-
-.header-image-bg .page-title {
-  position: relative;
-  z-index: 2;
 }
 
 .customize-partial-edit-shortcut button,
@@ -3902,7 +3949,7 @@ footer.bg-dark a {
 }
 
 .video-widget .video-controls button {
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
   border: none;
   padding: 5px 10px;
@@ -3938,20 +3985,20 @@ footer.bg-dark a {
 }
 
 .shapely_home_parallax > section:not(.image-bg) .btn-white {
-  border-color: #745cf9;
-  color: #745cf9;
+  border-color: var(--wp--preset--color--button, #745cf9);
+  color: var(--wp--preset--color--button, #745cf9);
 }
 
 .shapely_home_parallax > section:not(.image-bg) .btn-white:hover,
 .shapely_home_parallax > section:not(.image-bg) .btn-white:focus {
   color: #fff;
-  background-color: #5234f9;
-  border-color: #5234f9;
+  background-color: var(--wp--preset--color--button-hover, #5d47d7);
+  border-color: var(--wp--preset--color--button-hover, #5d47d7);
 }
 
 .shapely_home_parallax > section:not(.image-bg) .btn-white:active {
-  border-color: #5234f9;
-  background-color: #5234f9;
+  border-color: var(--wp--preset--color--button-hover, #5d47d7);
+  background-color: var(--wp--preset--color--button-hover, #5d47d7);
   color: #fff;
 }
 
@@ -3962,7 +4009,12 @@ footer.bg-dark a {
 /*
 * Widgets
 */
-.widget .widget-title {
+.widget .widget-title,
+.widget_block > .wp-block-heading:first-child,
+.widget_block > .wp-block-group > .wp-block-heading:first-child,
+.widget_block > .wp-block-group > .wp-block-group__inner-container > .wp-block-heading:first-child,
+.widget_block > .customize-partial-edit-shortcut + .wp-block-heading,
+.widget_block > .customize-partial-edit-shortcut + .wp-block-group > .wp-block-heading:first-child {
   font-size: 22px;
   line-height: 24px;
   color: #001c28;
@@ -4026,7 +4078,7 @@ footer.bg-dark a {
 .widget.widget_nav_menu > div ul li span,
 .widget.widget_nav_menu ul li span {
   font-size: 12px;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   float: right;
 }
 
@@ -4048,7 +4100,7 @@ footer.bg-dark a {
 .widget.widget_nav_menu > div ul li a,
 .widget.widget_nav_menu ul li a {
   font-size: 14px;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-weight: 400;
 }
 
@@ -4079,7 +4131,7 @@ footer.bg-dark a {
 .widget.widget_nav_menu > div ul li a:hover,
 .widget.widget_nav_menu ul li a:focus,
 .widget.widget_nav_menu ul li a:hover {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .woocommerce.widget ul.cart_list li a.remove {
@@ -4093,7 +4145,7 @@ footer.bg-dark a {
 }
 
 .widget.widget_recent_comments ul li {
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
 }
 
 .widget.widget_recent_comments ul li a {
@@ -4101,16 +4153,16 @@ footer.bg-dark a {
 }
 
 .widget.widget_recent_comments ul li .comment-author-link {
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
 }
 
 .widget.widget_recent_comments ul li .comment-author-link a {
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
 }
 
 .widget.widget_recent_comments ul li .comment-author-link a:focus,
 .widget.widget_recent_comments ul li .comment-author-link a:hover {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .widget.widget_nav_menu .menu > li {
@@ -4120,26 +4172,26 @@ footer.bg-dark a {
 .widget.widget_nav_menu .menu > li a {
   text-transform: initial;
   font-size: 14px;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-weight: 400;
   opacity: 1;
 }
 
 .widget.widget_nav_menu .menu > li a:focus,
 .widget.widget_nav_menu .menu > li a:hover {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .widget.widget_tag_cloud a {
   text-transform: initial;
   font-size: 14px;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-weight: 400;
 }
 
 .widget.widget_tag_cloud a:focus,
 .widget.widget_tag_cloud a:hover {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .widget.widget_recent_entries ul {
@@ -4169,7 +4221,7 @@ footer.bg-dark a {
 .widget.widget_recent_entries ul li a {
   text-transform: initial;
   font-size: 14px;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-weight: 400;
   display: inline-block;
   width: 100%;
@@ -4177,7 +4229,7 @@ footer.bg-dark a {
 
 .widget.widget_recent_entries ul li a:focus,
 .widget.widget_recent_entries ul li a:hover {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .widget.widget_rss .rss-widget-icon {
@@ -4212,7 +4264,7 @@ footer.bg-dark a {
 
 .widget.widget_rss ul li .rsswidget:hover,
 .widget.widget_rss ul li .rsswidget:focus {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .widget.widget_rss ul li .rss-date {
@@ -4223,7 +4275,7 @@ footer.bg-dark a {
 }
 
 .widget.widget_rss ul li .rssSummary {
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
 }
 
@@ -4261,7 +4313,7 @@ input[type='text']:focus,
 input[type='search']:focus,
 input[type='email']:focus,
 input[type='tel']:focus {
-  border-color: #745cf9;
+  border-color: var(--wp--preset--color--primary, #745cf9);
   box-shadow: none;
   outline: none;
 }
@@ -4270,8 +4322,8 @@ input[type='tel']:focus {
 .widget.widget_search input[type='text']:hover + button[type='submit'].searchsubmit,
 .widget.widget_product_search input[type='text']:focus + button[type='submit'].searchsubmit,
 .widget.widget_product_search input[type='text']:hover + button[type='submit'].searchsubmit {
-  color: #745cf9;
-  border-color: #745cf9 !important;
+  color: var(--wp--preset--color--primary, #745cf9);
+  border-color: var(--wp--preset--color--primary, #745cf9) !important;
 }
 
 .widget.widget_search .search-form > button[type='submit'].searchsubmit,
@@ -4321,7 +4373,7 @@ input[type='tel']:focus {
   text-transform: initial;
   font-weight: 400;
   letter-spacing: initial;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
   font-family: inherit;
 }
@@ -4330,7 +4382,7 @@ input[type='tel']:focus {
   text-transform: initial;
   font-weight: 400;
   letter-spacing: initial;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
   font-family: inherit;
 }
@@ -4339,7 +4391,7 @@ input[type='tel']:focus {
   text-transform: initial;
   font-weight: 400;
   letter-spacing: initial;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
   font-family: inherit;
 }
@@ -4397,7 +4449,7 @@ input[type='tel']:focus {
   display: block;
   content: '';
   height: 1px;
-  background: #745cf9;
+  background: var(--wp--preset--color--primary, #745cf9);
   position: absolute;
   bottom: -1px;
   left: 50%;
@@ -4410,7 +4462,7 @@ input[type='tel']:focus {
 }
 
 .widget.widget_calendar #wp-calendar thead {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev) {
@@ -4420,12 +4472,12 @@ input[type='tel']:focus {
 }
 
 .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev)#today {
-  border-color: #745cf9;
+  border-color: var(--wp--preset--color--primary, #745cf9);
 }
 
 .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev)#today:hover,
 .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev)#today:focus {
-  background: #745cf9;
+  background: var(--wp--preset--color--primary, #745cf9);
   color: #fff;
 }
 
@@ -4443,7 +4495,7 @@ input[type='tel']:focus {
 
 .widget.widget_calendar #wp-calendar td a,
 .widget.widget_calendar #wp-calendar th a {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
   text-decoration: none;
 }
 
@@ -4541,7 +4593,7 @@ aside .shapely-social .shapely-social-icon {
 
 .shapely-social .shapely-social-icon:hover,
 .shapely-social .shapely-social-icon:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .shapely-social-link--youtube .shapely-social-icon:before {
@@ -4550,15 +4602,12 @@ aside .shapely-social .shapely-social-icon {
 
 #colophon .widget {
   margin-bottom: 24px;
+  display: inline-block;
+  width: 100%;
 }
 
 #colophon .site-info {
   margin-top: 15px;
-}
-
-#colophon .widget {
-  display: inline-block;
-  width: 100%;
 }
 
 #colophon .widget ul {
@@ -4571,7 +4620,8 @@ aside .shapely-social .shapely-social-icon {
   margin-right: 0;
 }
 
-#colophon .widget .widget-title {
+#colophon .widget .widget-title,
+#colophon .widget_block .wp-block-heading {
   color: #fff;
   border-bottom: none;
 }
@@ -4601,7 +4651,7 @@ aside .shapely-social .shapely-social-icon {
 
 #colophon .widget.widget_rss ul li .rsswidget:hover,
 #colophon .widget.widget_rss ul li .rsswidget:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 #colophon .widget.widget_rss .widget-title a {
@@ -4610,7 +4660,7 @@ aside .shapely-social .shapely-social-icon {
 
 #colophon .widget.widget_rss .widget-title a:hover,
 #colophon .widget.widget_rss .widget-title a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 /*
@@ -4638,13 +4688,13 @@ aside .shapely-social .shapely-social-icon {
 }
 
 .post-content .post-meta li a {
-  color: #745cf9;
+  color: var(--wp--preset--color--primary, #745cf9);
   font-weight: 400;
 }
 
 .post-content .post-meta li a:hover,
 .post-content .post-meta li a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .post-content .post-meta li:before {
@@ -4691,7 +4741,7 @@ aside .shapely-social .shapely-social-icon {
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
-  color: #bebebe;
+  color: var(--wp--preset--color--body, #67727a);
   display: inline-block;
   width: 100%;
   text-align: center;
@@ -4702,7 +4752,7 @@ aside .shapely-social .shapely-social-icon {
 
 .post-content .shapely-category a:hover,
 .post-content .shapely-category a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .post-content .shapely-category a:after {
@@ -4727,14 +4777,14 @@ aside .shapely-social .shapely-social-icon {
   width: 140px;
   margin-top: 20px;
   text-align: center;
-  background: #745cf9;
+  background: var(--wp--preset--color--button, #745cf9);
   color: #fff;
   padding: 10px 20px;
 }
 
 .post-content .more-link:hover,
 .post-content .more-link:focus {
-  background: #5234f9;
+  background: var(--wp--preset--color--button-hover, #5d47d7);
 }
 
 .shapely-next-prev {
@@ -4761,7 +4811,7 @@ aside .shapely-social .shapely-social-icon {
 
 .shapely-tags > a:hover,
 .shapely-tags > a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .shapely-related-posts {
@@ -4792,7 +4842,7 @@ aside .shapely-social .shapely-social-icon {
 
 .shapely-related-posts .shapely-related-post-title a:hover,
 .shapely-related-posts .shapely-related-post-title a:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 .shapely-related-posts .shapely-carousel-navigation {
@@ -4841,7 +4891,7 @@ aside .shapely-social .shapely-social-icon {
   text-transform: initial;
   font-weight: 400;
   letter-spacing: initial;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
   font-family: inherit;
 }
@@ -4850,7 +4900,7 @@ aside .shapely-social .shapely-social-icon {
   text-transform: initial;
   font-weight: 400;
   letter-spacing: initial;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
   font-family: inherit;
 }
@@ -4859,7 +4909,7 @@ aside .shapely-social .shapely-social-icon {
   text-transform: initial;
   font-weight: 400;
   letter-spacing: initial;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
   font-family: inherit;
 }
@@ -4867,7 +4917,7 @@ aside .shapely-social .shapely-social-icon {
 .comment-form textarea:focus,
 .comment-form textarea:active {
   outline: none;
-  border-bottom: 1px solid #745cf9;
+  border-bottom: 1px solid var(--wp--preset--color--primary, #745cf9);
 }
 
 .comment-form input[type='text']:focus,
@@ -4877,7 +4927,7 @@ aside .shapely-social .shapely-social-icon {
 .comment-form input[type='email']:focus,
 .comment-form input[type='email']:active {
   outline: none;
-  border-bottom: 1px solid #745cf9;
+  border-bottom: 1px solid var(--wp--preset--color--primary, #745cf9);
 }
 
 .comment-form .form-submit {
@@ -4886,6 +4936,7 @@ aside .shapely-social .shapely-social-icon {
   margin-top: 15px;
 }
 
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .author-bio {
   background: transparent;
 }
@@ -4911,18 +4962,18 @@ aside .shapely-social .shapely-social-icon {
 
 .author-bio p {
   margin-top: 10px;
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-size: 14px;
 }
 
 .author-bio .author-email {
-  color: #8c979e;
+  color: var(--wp--preset--color--body, #67727a);
   font-weight: 400;
 }
 
 .author-bio .author-email:hover,
 .author-bio .author-email:focus {
-  color: #5234f9;
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 @media all and (min-width: 550px) {
@@ -5107,7 +5158,7 @@ section .widget-post-excerpt {
     height: 45px;
     padding: 0;
     margin: 0;
-    background-color: #745cf9;
+    background-color: var(--wp--preset--color--button, #745cf9);
     border: none;
     border-radius: 0;
     cursor: pointer;
@@ -5120,8 +5171,8 @@ section .widget-post-excerpt {
 }
 
 .search-form button[type='submit']:hover {
-    background-color: #5d47d7;
-    border-color: #5d47d7;
+    background-color: var(--wp--preset--color--button-hover, #5d47d7);
+    border-color: var(--wp--preset--color--button-hover, #5d47d7);
 }
 
 .search-form button[type='submit'] i {
@@ -5145,29 +5196,21 @@ section .widget-post-excerpt {
 }
 
 /* Basic styling for social icons */
-#social li a {
+:is(#social, #social-2, #social-3) li a {
   display: inline-block;
   margin: 0 5px;
   color: inherit;
 }
 
-#social li a:hover {
-  color: #5d47d7;
+:is(#social, #social-2, #social-3) li a:hover {
+  color: var(--wp--preset--color--primary-hover, #5234f9);
 }
 
 /* Remove all old selectors and content rules for individual social platforms */
 
-.header-image-bg {
-  background-size: cover;
-  position: relative;
-}
-
 .header-image-bg .page-title {
   position: relative;
   z-index: 2;
-}
-
-#social .social_icon span {
 }
 
 .header-image-bg {
@@ -5219,10 +5262,6 @@ section .widget-post-excerpt {
 }
 
 /* Clean up any old social icon code that's no longer needed with Font Awesome 7 */
-.shapely_home_parallax section,
-.small-screen-overlay .widget {
-  /* Remove the font-family declaration */
-}
 
 /* Add specific selectors for Font Awesome icons */
 .shapely_home_parallax .fa,
@@ -5239,6 +5278,7 @@ section .widget-post-excerpt {
 
 
 /* Inline Search Form */
+/* stylelint-disable-next-line no-duplicate-selectors -- deliberate override; rules between the two copies also apply */
 .search-form-wrapper {
     display: flex;
     align-items: center;
@@ -5261,7 +5301,7 @@ section .widget-post-excerpt {
 .search-form button[type="submit"] {
     height: 40px;
     padding: 6px 12px;
-    background-color: #745cf9;
+    background-color: var(--wp--preset--color--button, #745cf9);
     border: none;
     border-radius: 0;
     cursor: pointer;
@@ -5269,7 +5309,7 @@ section .widget-post-excerpt {
 }
 
 .search-form button[type="submit"]:hover {
-    background-color: #5d47d7;
+    background-color: var(--wp--preset--color--button-hover, #5d47d7);
 }
 
 /* Fix for search form in nav */
@@ -5280,4 +5320,267 @@ section .widget-post-excerpt {
 
 .nav-bar .function .search-form-wrapper {
     border: none;
+}
+
+/*--------------------------------------------------------------
+## Customizer colours
+--------------------------------------------------------------*/
+
+/*
+ * What each Customizer colour recolours beyond the palette. These rules used
+ * to be built as a string in shapely_get_theme_options() and printed inline on
+ * every page. shapely_body_classes() adds the body class only when that colour
+ * is set, so an untouched site renders exactly as before, and :where() adds no
+ * specificity, so each rule wins and loses exactly as the inline one did. The
+ * values are the theme.json palette, which the Customizer overrides: one
+ * source for every colour.
+ *
+ * WooCommerce puts .woocommerce on <body>, the same element as the switch
+ * class, so those selectors also come as ".woocommerce:where(...)".
+ */
+
+:where(.shapely-link-color) a,
+:where(.shapely-link-color) .image-bg a,
+:where(.shapely-link-color) .contact-section .social-icons li a,
+:where(.shapely-link-color) a:visited,
+:where(.shapely-link-color) .footer .footer-credits a,
+:where(.shapely-link-color) .post-content .post-meta li a,
+:where(.shapely-link-color) .post-content .shapely-category a,
+:where(.shapely-link-color) .module.widget-handle i {
+  color: var(--wp--preset--color--primary);
+}
+
+:where(.shapely-link-hover-color) a:hover,
+:where(.shapely-link-hover-color) a:active,
+:where(.shapely-link-hover-color) a:focus,
+:where(.shapely-link-hover-color) .post-title a:hover,
+:where(.shapely-link-hover-color) .post-title a:focus,
+:where(.shapely-link-hover-color) .image-bg a:hover,
+:where(.shapely-link-hover-color) .image-bg a:focus,
+:where(.shapely-link-hover-color) .contact-section .social-icons li a:hover,
+:where(.shapely-link-hover-color) .contact-section .social-icons li a:focus,
+:where(.shapely-link-hover-color) .footer .footer-credits a:hover,
+:where(.shapely-link-hover-color) .footer .footer-credits a:focus,
+:where(.shapely-link-hover-color) .post-content .post-meta li a:hover,
+:where(.shapely-link-hover-color) .post-content .post-meta li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_recent_entries ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_recent_entries ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_recent_comments ul li .comment-author-link a:focus,
+:where(.shapely-link-hover-color) .widget.widget_recent_comments ul li .comment-author-link a:hover,
+:where(.shapely-link-hover-color) .widget.widget_archive > div ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_archive > div ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_archive ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_archive ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_categories > div ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_categories > div ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_categories ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_categories ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_meta > div ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_meta > div ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_meta ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_meta ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_pages > div ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_pages > div ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_pages ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_pages ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_nav_menu > div ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_nav_menu > div ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_nav_menu ul li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_nav_menu ul li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_nav_menu .menu > li a:focus,
+:where(.shapely-link-hover-color) .widget.widget_nav_menu .menu > li a:hover,
+:where(.shapely-link-hover-color) .widget.widget_tag_cloud a:focus,
+:where(.shapely-link-hover-color) .widget.widget_tag_cloud a:hover,
+:where(.shapely-link-hover-color) .widget_product_categories ul.product-categories li a:hover,
+:where(.shapely-link-hover-color) .widget_product_categories ul.product-categories li a:focus,
+:where(.shapely-link-hover-color) .widget_product_tag_cloud .tagcloud a:hover,
+:where(.shapely-link-hover-color) .widget_product_tag_cloud .tagcloud a:focus,
+:where(.shapely-link-hover-color) .widget_products .product_list_widget a:hover,
+:where(.shapely-link-hover-color) .widget_products .product_list_widget a:focus,
+:where(.shapely-link-hover-color) .woocommerce.widget ul.cart_list li a:hover,
+.woocommerce.widget:where(.shapely-link-hover-color) ul.cart_list li a:hover,
+:where(.shapely-link-hover-color) .woocommerce.widget ul.cart_list li a:focus,
+.woocommerce.widget:where(.shapely-link-hover-color) ul.cart_list li a:focus,
+:where(.shapely-link-hover-color) .woocommerce.widget ul.product_list_widget li a:hover,
+.woocommerce.widget:where(.shapely-link-hover-color) ul.product_list_widget li a:hover,
+:where(.shapely-link-hover-color) .woocommerce.widget ul.product_list_widget li a:focus,
+.woocommerce.widget:where(.shapely-link-hover-color) ul.product_list_widget li a:focus,
+:where(.shapely-link-hover-color) .woocommerce .widget_layered_nav_filters ul li a:hover,
+.woocommerce:where(.shapely-link-hover-color) .widget_layered_nav_filters ul li a:hover,
+:where(.shapely-link-hover-color) .woocommerce .widget_layered_nav_filters ul li a:focus,
+.woocommerce:where(.shapely-link-hover-color) .widget_layered_nav_filters ul li a:focus,
+:where(.shapely-link-hover-color) .woocommerce .widget_layered_nav ul li a:hover,
+.woocommerce:where(.shapely-link-hover-color) .widget_layered_nav ul li a:hover,
+:where(.shapely-link-hover-color) .woocommerce .widget_layered_nav ul li a:focus,
+.woocommerce:where(.shapely-link-hover-color) .widget_layered_nav ul li a:focus,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul li:hover > a,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul li:focus > a,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul .dropdown:hover:after,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul .dropdown:focus:after,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul li.menu-item-has-children:hover:after,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul li.menu-item-has-children:focus:after,
+:where(.shapely-link-hover-color) .main-navigation .menu li a:focus,
+:where(.shapely-link-hover-color) .main-navigation .menu li:focus > a,
+:where(.shapely-link-hover-color) .main-navigation .menu > li > ul li a:focus,
+:where(.shapely-link-hover-color) .post-content .shapely-category a:hover,
+:where(.shapely-link-hover-color) .post-content .shapely-category a:focus,
+:where(.shapely-link-hover-color) .main-navigation .menu li:hover > a,
+:where(.shapely-link-hover-color) .main-navigation .menu > li:hover:after,
+:where(.shapely-link-hover-color) .main-navigation .menu > li:focus-within:after,
+:where(.shapely-link-hover-color) .bg-dark .social-list a:hover,
+:where(.shapely-link-hover-color) .bg-dark .social-list a:focus,
+:where(.shapely-link-hover-color) .shapely-social .shapely-social-icon:hover,
+:where(.shapely-link-hover-color) .shapely-social .shapely-social-icon:focus {
+  color: var(--wp--preset--color--primary-hover);
+}
+
+:where(.shapely-button-color) .btn-filled,
+:where(.shapely-button-color) .btn-filled:visited,
+:where(.shapely-button-color) .woocommerce #respond input#submit.alt,
+.woocommerce:where(.shapely-button-color) #respond input#submit.alt,
+:where(.shapely-button-color) .woocommerce a.button.alt,
+.woocommerce:where(.shapely-button-color) a.button.alt,
+:where(.shapely-button-color) .woocommerce button.button.alt,
+.woocommerce:where(.shapely-button-color) button.button.alt,
+:where(.shapely-button-color) .woocommerce input.button.alt,
+.woocommerce:where(.shapely-button-color) input.button.alt,
+:where(.shapely-button-color) .woocommerce #respond input#submit,
+.woocommerce:where(.shapely-button-color) #respond input#submit,
+:where(.shapely-button-color) .woocommerce a.button,
+.woocommerce:where(.shapely-button-color) a.button,
+:where(.shapely-button-color) .woocommerce button.button,
+.woocommerce:where(.shapely-button-color) button.button,
+:where(.shapely-button-color) .woocommerce input.button,
+.woocommerce:where(.shapely-button-color) input.button,
+:where(.shapely-button-color) .video-widget .video-controls button,
+:where(.shapely-button-color) input[type="submit"],
+:where(.shapely-button-color) button[type="submit"],
+:where(.shapely-button-color) .post-content .more-link {
+  background: var(--wp--preset--color--button) !important;
+  border: 2px solid var(--wp--preset--color--button) !important;
+}
+
+:where(.shapely-button-color) .shapely_home_parallax > section:not(.image-bg) .btn-white {
+  color: var(--wp--preset--color--button) !important;
+  border: 2px solid var(--wp--preset--color--button) !important;
+}
+
+:where(.shapely-button-hover-color) .btn-filled:hover,
+:where(.shapely-button-hover-color) .btn-filled:focus,
+:where(.shapely-button-hover-color) .woocommerce #respond input#submit.alt:hover,
+.woocommerce:where(.shapely-button-hover-color) #respond input#submit.alt:hover,
+:where(.shapely-button-hover-color) .woocommerce #respond input#submit.alt:focus,
+.woocommerce:where(.shapely-button-hover-color) #respond input#submit.alt:focus,
+:where(.shapely-button-hover-color) .woocommerce a.button.alt:hover,
+.woocommerce:where(.shapely-button-hover-color) a.button.alt:hover,
+:where(.shapely-button-hover-color) .woocommerce a.button.alt:focus,
+.woocommerce:where(.shapely-button-hover-color) a.button.alt:focus,
+:where(.shapely-button-hover-color) .woocommerce button.button.alt:hover,
+.woocommerce:where(.shapely-button-hover-color) button.button.alt:hover,
+:where(.shapely-button-hover-color) .woocommerce button.button.alt:focus,
+.woocommerce:where(.shapely-button-hover-color) button.button.alt:focus,
+:where(.shapely-button-hover-color) .woocommerce input.button.alt:hover,
+.woocommerce:where(.shapely-button-hover-color) input.button.alt:hover,
+:where(.shapely-button-hover-color) .woocommerce input.button.alt:focus,
+.woocommerce:where(.shapely-button-hover-color) input.button.alt:focus,
+:where(.shapely-button-hover-color) .woocommerce #respond input#submit:hover,
+.woocommerce:where(.shapely-button-hover-color) #respond input#submit:hover,
+:where(.shapely-button-hover-color) .woocommerce #respond input#submit:focus,
+.woocommerce:where(.shapely-button-hover-color) #respond input#submit:focus,
+:where(.shapely-button-hover-color) .woocommerce a.button:hover,
+.woocommerce:where(.shapely-button-hover-color) a.button:hover,
+:where(.shapely-button-hover-color) .woocommerce a.button:focus,
+.woocommerce:where(.shapely-button-hover-color) a.button:focus,
+:where(.shapely-button-hover-color) .woocommerce button.button:hover,
+.woocommerce:where(.shapely-button-hover-color) button.button:hover,
+:where(.shapely-button-hover-color) .woocommerce button.button:focus,
+.woocommerce:where(.shapely-button-hover-color) button.button:focus,
+:where(.shapely-button-hover-color) .woocommerce input.button:hover,
+.woocommerce:where(.shapely-button-hover-color) input.button:hover,
+:where(.shapely-button-hover-color) .woocommerce input.button:focus,
+.woocommerce:where(.shapely-button-hover-color) input.button:focus,
+:where(.shapely-button-hover-color) .video-widget .video-controls button:hover,
+:where(.shapely-button-hover-color) .video-widget .video-controls button:focus,
+:where(.shapely-button-hover-color) input[type="submit"]:hover,
+:where(.shapely-button-hover-color) input[type="submit"]:focus,
+:where(.shapely-button-hover-color) button[type="submit"]:hover,
+:where(.shapely-button-hover-color) button[type="submit"]:focus,
+:where(.shapely-button-hover-color) .post-content .more-link:hover,
+:where(.shapely-button-hover-color) .post-content .more-link:focus,
+:where(.shapely-button-hover-color) .btn:not(.btn-white):hover,
+:where(.shapely-button-hover-color) .btn:not(.btn-white):focus,
+:where(.shapely-button-hover-color) .button:not(.btn-white):hover,
+:where(.shapely-button-hover-color) .button:not(.btn-white):focus {
+  background: var(--wp--preset--color--button-hover) !important;
+  border: 2px solid var(--wp--preset--color--button-hover) !important;
+}
+
+:where(.shapely-button-hover-color) .shapely_home_parallax > section:not(.image-bg) .btn-white:hover,
+:where(.shapely-button-hover-color) .shapely_home_parallax > section:not(.image-bg) .btn-white:focus,
+:where(.shapely-button-hover-color) .pagination span:not( .dots ),
+:where(.shapely-button-hover-color) .pagination a:hover,
+:where(.shapely-button-hover-color) .pagination a:focus,
+:where(.shapely-button-hover-color) .woocommerce-pagination ul.page-numbers span.page-numbers,
+.woocommerce-pagination:where(.shapely-button-hover-color) ul.page-numbers span.page-numbers,
+:where(.shapely-button-hover-color) .woocommerce nav.woocommerce-pagination ul li a:focus,
+.woocommerce:where(.shapely-button-hover-color) nav.woocommerce-pagination ul li a:focus,
+:where(.shapely-button-hover-color) .woocommerce nav.woocommerce-pagination ul li a:hover,
+.woocommerce:where(.shapely-button-hover-color) nav.woocommerce-pagination ul li a:hover,
+:where(.shapely-button-hover-color) .woocommerce nav.woocommerce-pagination ul li span.current,
+.woocommerce:where(.shapely-button-hover-color) nav.woocommerce-pagination ul li span.current {
+  background-color: var(--wp--preset--color--button-hover) !important;
+  border-color: var(--wp--preset--color--button-hover) !important;
+  color: #fff !important;
+}
+
+:where(.shapely-button-hover-color) .widget.widget_search .search-form > input#s:hover,
+:where(.shapely-button-hover-color) .widget.widget_search .search-form > input#s:focus,
+:where(.shapely-button-hover-color) .search-form .search-field:hover,
+:where(.shapely-button-hover-color) .search-form .search-field:focus,
+:where(.shapely-button-hover-color) .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev)#today,
+:where(.shapely-button-hover-color) .widget_product_search .woocommerce-product-search > input.search-field:hover,
+:where(.shapely-button-hover-color) .widget_product_search .woocommerce-product-search > input.search-field:focus,
+:where(.shapely-button-hover-color) .widget.widget_search input[type="text"]:focus + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) .widget.widget_search input[type="text"]:hover + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) textarea:hover,
+:where(.shapely-button-hover-color) textarea:focus,
+:where(.shapely-button-hover-color) input[type="text"]:hover,
+:where(.shapely-button-hover-color) input[type="search"]:hover,
+:where(.shapely-button-hover-color) input[type="email"]:hover,
+:where(.shapely-button-hover-color) input[type="tel"]:hover,
+:where(.shapely-button-hover-color) input[type="password"]:hover,
+:where(.shapely-button-hover-color) input[type="text"]:focus,
+:where(.shapely-button-hover-color) input[type="search"]:focus,
+:where(.shapely-button-hover-color) input[type="email"]:focus,
+:where(.shapely-button-hover-color) input[type="tel"]:focus,
+:where(.shapely-button-hover-color) input[type="password"]:focus,
+:where(.shapely-button-hover-color) .widget.widget_product_search input[type="text"]:focus + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) .widget.widget_product_search input[type="text"]:hover + button[type="submit"].searchsubmit {
+  border-color: var(--wp--preset--color--button-hover) !important;
+}
+
+:where(.shapely-button-hover-color) .widget.widget_calendar #wp-calendar > caption:after,
+:where(.shapely-button-hover-color) .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev)#today:hover,
+:where(.shapely-button-hover-color) .widget.widget_calendar #wp-calendar td:not(.pad):not(#next):not(#prev)#today:focus {
+  background-color: var(--wp--preset--color--button-hover);
+}
+
+:where(.shapely-button-hover-color) .widget.widget_search input[type="text"]:focus + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) .widget.widget_search input[type="text"]:hover + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) .widget.widget_product_search input[type="text"]:focus + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) .widget.widget_product_search input[type="text"]:hover + button[type="submit"].searchsubmit,
+:where(.shapely-button-hover-color) .search-form .search-field:focus + .search-submit,
+:where(.shapely-button-hover-color) .search-form .search-field:hover + .search-submit,
+:where(.shapely-button-hover-color) .image-bg .text-slider .flex-direction-nav li a:focus:before {
+  color: var(--wp--preset--color--button-hover);
+}
+
+/*
+ * Calendar links in the dark footer. The link colour measured 4.2:1 against
+ * it, under the 4.5:1 WCAG AA minimum for text this size.
+ */
+#colophon .widget.widget_calendar #wp-calendar td a,
+#colophon .widget.widget_calendar #wp-calendar th a {
+  color: #fff;
+  text-decoration: underline;
 }

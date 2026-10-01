@@ -33,9 +33,9 @@ if ( class_exists( 'WP_Customize_Control' ) && ! class_exists( 'Shapely_Control_
 		 * Render the control.
 		 */
 		public function render_content() {
-			$input_id   = '_customize-input-' . $this->id;
-			$output_id  = $input_id . '-value';
-			$attrs      = wp_parse_args(
+			$input_id    = '_customize-input-' . $this->id;
+			$output_id   = $input_id . '-value';
+			$attrs       = wp_parse_args(
 				$this->input_attrs,
 				array(
 					'min'  => 0,
@@ -63,7 +63,10 @@ if ( class_exists( 'WP_Customize_Control' ) && ! class_exists( 'Shapely_Control_
 				<input
 					type="range"
 					id="<?php echo esc_attr( $input_id ); ?>"
-					<?php if ( $describedby ) : ?>aria-describedby="<?php echo esc_attr( $describedby ); ?>"<?php endif; ?>
+					<?php
+					if ( $describedby ) :
+						?>
+						aria-describedby="<?php echo esc_attr( $describedby ); ?>"<?php endif; ?>
 					min="<?php echo esc_attr( $attrs['min'] ); ?>"
 					max="<?php echo esc_attr( $attrs['max'] ); ?>"
 					step="<?php echo esc_attr( $attrs['step'] ); ?>"

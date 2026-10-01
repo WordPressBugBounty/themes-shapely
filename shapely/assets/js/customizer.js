@@ -16,7 +16,7 @@
 			control.widthElement = $(dimensions[0]);
 			control.heightElement = $(dimensions[1]);
 
-			if (undefined !== control.logo.params.attachment) {
+			if (control.hasAttachment()) {
 				control.hasLogo = true;
 				control.logoWidth = control.logo.params.attachment.width;
 				control.logoHeight = control.logo.params.attachment.height;
@@ -25,7 +25,7 @@
 				control.toggle(false);
 			}
 
-			control.logo.setting.bind('change', function () {
+			control.logo.setting.bind(function () {
 				control.updateLogo();
 			});
 
@@ -48,7 +48,7 @@
 		updateLogo: function () {
 			var control = this,
 				values = control.setting();
-			if (undefined !== control.logo.params.attachment) {
+			if (control.hasAttachment()) {
 
 				control.logoWidth = control.logo.params.attachment.width;
 				control.logoHeight = control.logo.params.attachment.height;
@@ -74,6 +74,15 @@
 				control.hasLogo = false;
 				control.toggle(false);
 			}
+		},
+
+		/*
+		 * Removing the logo leaves params.attachment as {}, not undefined, so
+		 * the old check kept the fields showing with nothing to scale from.
+		 */
+		hasAttachment: function () {
+			var attachment = this.logo.params.attachment;
+			return !!(attachment && attachment.id && attachment.width && attachment.height);
 		},
 
 		calculateRatio: function (keep) {
@@ -110,7 +119,6 @@
 
 	});
 
-	// Extend epsilon button constructor
 	$.extend(api.controlConstructor, {
 		'shapely-logo-dimension': api.shapelyLogoDimension
 	});

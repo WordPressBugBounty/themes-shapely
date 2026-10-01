@@ -46,7 +46,7 @@ require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/extras.php';
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/jetpack.php';
-require_once get_template_directory() . '/inc/class-wp-bootstrap-navwalker.php';
+require_once get_template_directory() . '/inc/class-shapely-bootstrap-navwalker.php';
 require_once get_template_directory() . '/inc/socialnav.php';
 require_once get_template_directory() . '/inc/class-shapely-related-posts.php';
 require_once get_template_directory() . '/inc/class-shapely.php';
@@ -164,6 +164,8 @@ if ( ! function_exists( 'shapely_setup' ) ) :
 		 * Make the editor canvas resemble the front end. Enqueued rather than
 		 * inlined so it is cached and overridable by a child theme.
 		 */
+		// Without editor-styles support the block editor ignores add_editor_style().
+		add_theme_support( 'editor-styles' );
 		add_editor_style( 'assets/css/editor-style.css' );
 
 		// Set up the WordPress core custom background feature.
@@ -178,12 +180,6 @@ if ( ! function_exists( 'shapely_setup' ) ) :
 			)
 		);
 
-		/**
-		 * Enable support for Post Thumbnails on posts and pages.
-		 *
-		 * @link http://codex.wordpress.org/Function_Reference/add_theme_support#Post_Thumbnails
-		 */
-		add_theme_support( 'post-thumbnails' );
 		add_image_size( 'shapely-full', 1110, 530, true );
 		add_image_size( 'shapely-featured', 730, 350, true );
 		add_image_size( 'shapely-grid', 350, 300, true );
@@ -242,10 +238,11 @@ function shapely_widgets_init() {
 		)
 	);
 
-	for ( $i = 1; $i < 5; $i ++ ) {
+	for ( $i = 1; $i < 5; $i++ ) {
 		register_sidebar(
 			array(
 				'id'            => 'footer-widget-' . $i,
+				/* translators: %s: footer column number */
 				'name'          => sprintf( esc_html__( 'Footer Widget %s', 'shapely' ), $i ),
 				'description'   => esc_html__( 'Used for footer widget area', 'shapely' ),
 				'before_widget' => '<div id="%1$s" class="widget %2$s">',
@@ -268,31 +265,25 @@ function shapely_widgets_init() {
 			)
 		);
 	}
-
 }
 
 add_action( 'widgets_init', 'shapely_widgets_init' );
 
-/**
- * Hides the custom post template for pages on WordPress 4.6 and older
- *
- * @param array $post_templates Array of page templates. Keys are filenames, values are translated names.
- *
- * @return array Filtered array of page templates.
- */
-function shapely_exclude_page_templates( $post_templates ) {
-
-	if ( version_compare( $GLOBALS['wp_version'], '4.7', '<' ) ) {
-		unset( $post_templates['page-templates/full-width.php'] );
-		unset( $post_templates['page-templates/no-sidebar.php'] );
-		unset( $post_templates['page-templates/sidebar-left.php'] );
-		unset( $post_templates['page-templates/sidebar-right.php'] );
+if ( ! function_exists( 'shapely_needs_full_fontawesome' ) ) :
+	/**
+	 * Whether the page needs icons outside the theme's own subset.
+	 *
+	 * shapely-companion's Features and Video widgets print a Font Awesome class
+	 * the site owner picked from the full 4.x list, and the plugin looks for its
+	 * icon stylesheet at a path the theme stopped shipping in 1.3.3. With only
+	 * the subset those icons rendered as empty squares.
+	 *
+	 * @return bool
+	 */
+	function shapely_needs_full_fontawesome() {
+		return is_active_widget( false, false, 'shapely_home_features' ) || is_active_widget( false, false, 'shapely_video_widget' );
 	}
-
-	return $post_templates;
-}
-
-add_filter( 'theme_page_templates', 'shapely_exclude_page_templates' );
+endif;
 
 /**
  * Enqueue scripts and styles.
@@ -301,48 +292,36 @@ function shapely_scripts() {
 	$uri = get_template_directory_uri();
 
 	// Add Bootstrap default CSS
-	wp_enqueue_style( 'shapely-bootstrap', $uri . '/assets/css/bootstrap.min.css', array(), '3.4.1' );
+	wp_enqueue_style( 'shapely-bootstrap', $uri . '/assets/css/bootstrap.min.css', array(), '3.4.1-1' );
 
 	/*
-	 * Registered under a theme-specific handle rather than the generic
-	 * 'font-awesome'. WordPress deduplicates by handle, so whichever plugin
-	 * registers 'font-awesome' first wins and every later enqueue is silently
-	 * a no-op. Elementor ships Font Awesome 4.7 under exactly that handle, so
-	 * on any site running it the theme's own Font Awesome never loaded at all --
-	 * and the theme's fa-brands / fa-solid classes do not exist in 4.x, which
-	 * is why the social, search and menu icons rendered as blank boxes.
- *
- * Font Awesome 7, split by style: the core file carries the icon name map and
-	 * each style file adds one @font-face. all.min.css was replaced because it also
-	 * carries v4 and v5 compatibility @font-face blocks, and no shim is wanted --
-	 * every class the theme renders is a native Font Awesome 7 name. Only woff2 is
-	 * bundled, and only the solid and brands faces, which are the only two the
-	 * theme renders.
- *
- * Versioned with SHAPELY_VERSION, not the Font Awesome version. The latter
- * never changes when the bundled file does, and this stylesheet is served
- * cache-control: immutable for a year -- a corrected copy would not have
- * reached a single returning visitor or CDN edge.
-	 */
-	$fa_uri = $uri . '/assets/css/fontawesome/';
-	/*
-	 * The bundled Font Awesome is subsetted to the glyphs this theme renders, a few
-	 * kilobytes rather than a few hundred. A site that uses Font Awesome classes in
+	 * Font Awesome 7, registered under a theme-specific handle rather than the
+	 * generic 'font-awesome'. WordPress deduplicates by handle, so a plugin that
+	 * registers 'font-awesome' first (Elementor ships 4.7 under that name) would
+	 * otherwise stop the theme's copy loading, and the fa-brands / fa-solid
+	 * classes the theme renders do not exist in 4.x.
+	 *
+	 * By default only a subset is loaded: the glyphs this theme renders, built
+	 * by .github/build-icon-subset.py. A site that uses Font Awesome classes in
 	 * its own content -- a widget, a page builder, a child theme -- can load the
-	 * complete set instead:
+	 * complete set, which also maps Font Awesome 4 names such as
+	 * "fa fa-paper-plane-o" onto version 7:
 	 *
 	 *     add_filter( 'shapely_full_fontawesome', '__return_true' );
+	 *
+	 * Versioned with SHAPELY_VERSION, not the Font Awesome version: the file is
+	 * served cache-control: immutable, and the upstream version does not change
+	 * when the bundled copy is rebuilt.
 	 */
-	if ( apply_filters( 'shapely_full_fontawesome', false ) ) {
-		wp_enqueue_style( 'shapely-font-awesome', $fa_uri . 'fontawesome.min.css', array(), SHAPELY_VERSION );
-		wp_enqueue_style( 'shapely-font-awesome-solid', $fa_uri . 'solid.min.css', array( 'shapely-font-awesome' ), SHAPELY_VERSION );
-		wp_enqueue_style( 'shapely-font-awesome-brands', $fa_uri . 'brands.min.css', array( 'shapely-font-awesome' ), SHAPELY_VERSION );
+	$fa_uri = $uri . '/assets/css/fontawesome/';
+	if ( apply_filters( 'shapely_full_fontawesome', shapely_needs_full_fontawesome() ) ) {
+		wp_enqueue_style( 'shapely-font-awesome', $fa_uri . 'all.min.css', array(), SHAPELY_VERSION );
 	} else {
 		wp_enqueue_style( 'shapely-font-awesome', $fa_uri . 'subset/fontawesome-subset.min.css', array(), SHAPELY_VERSION );
 	}
 
 	// Add Google Fonts
-	wp_enqueue_style( 'shapely-fonts', 'https://fonts.googleapis.com/css?family=Raleway:100,300,400,500,600,700&display=swap', array(), null );
+	wp_enqueue_style( 'shapely-fonts', $uri . '/assets/css/google-fonts.css', array(), SHAPELY_VERSION );
 
 	// Add slider CSS
 	wp_enqueue_style( 'shapely-flexslider', $uri . '/assets/css/flexslider.css', array(), SHAPELY_VERSION );
@@ -355,8 +334,6 @@ function shapely_scripts() {
 
 	// rtl.css is emitted automatically by core's locale_stylesheet() on wp_head.
 
-	wp_enqueue_script( 'shapely-skip-link-focus-fix', $uri . '/assets/js/skip-link-focus-fix.js', array(), SHAPELY_VERSION, true );
-
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
@@ -366,8 +343,9 @@ function shapely_scripts() {
 	}
 
 	/*
-	 * Restores the .bind()/.unbind()/.delegate()/.undelegate() aliases that
-	 * jQuery 4 removes and FlexSlider 2.x still calls. No-op on jQuery 3.x.
+	 * Restores the jQuery utilities that jQuery 4 removed and the bundled
+	 * FlexSlider and OwlCarousel still call ($.camelCase, $.type, ...), plus
+	 * the deprecated event aliases. No-op on jQuery 3.x.
 	 */
 	wp_enqueue_script( 'shapely-jquery-compat', $uri . '/assets/js/jquery-compat.js', array( 'jquery' ), SHAPELY_VERSION, true );
 
@@ -375,27 +353,35 @@ function shapely_scripts() {
 	wp_enqueue_script( 'shapely-flexslider', $uri . '/assets/js/flexslider.min.js', array( 'jquery', 'shapely-jquery-compat' ), '2.7.2', true );
 
 	if ( is_page_template( 'page-templates/template-home.php' ) || is_page_template( 'page-templates/template-widget.php' ) ) {
-		wp_enqueue_script( 'shapely-parallax', $uri . '/assets/js/parallax.min.js', array( 'jquery' ), '1.5.0', true );
+		wp_enqueue_script( 'shapely-parallax', $uri . '/assets/js/parallax.min.js', array( 'jquery' ), '1.5.0-shapely.1', true );
 	}
-	/**
-	 * OwlCarousel Library
+	/*
+	 * OwlCarousel drives only the related posts carousel, which is printed on
+	 * single posts and projects. It was loaded on every page.
 	 */
-	wp_enqueue_script( 'shapely-owl-carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.js', array( 'jquery' ), '2.3.4', true );
-	wp_enqueue_style( 'shapely-owl-carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.css', array(), '2.3.4' );
-	wp_enqueue_style( 'shapely-owl-carousel-theme', $uri . '/assets/js/owl-carousel/owl.theme.default.css', array(), '2.3.4' );
+	if ( apply_filters( 'shapely_load_owl_carousel', is_single() ) ) {
+		wp_enqueue_script( 'shapely-owl-carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.js', array( 'jquery', 'shapely-jquery-compat' ), '2.3.4', true );
+		wp_enqueue_style( 'shapely-owl-carousel', $uri . '/assets/js/owl-carousel/owl.carousel.min.css', array(), '2.3.4' );
+		wp_enqueue_style( 'shapely-owl-carousel-theme', $uri . '/assets/js/owl-carousel/owl.theme.default.css', array(), '2.3.4' );
+	}
 
 	wp_enqueue_script(
-		'shapely-scripts', $uri . '/assets/js/shapely-scripts.js', array(
+		'shapely-scripts',
+		$uri . '/assets/js/shapely-scripts.js',
+		array(
 			'jquery',
 			'imagesloaded',
-		), SHAPELY_VERSION, true
+		),
+		SHAPELY_VERSION,
+		true
 	);
 
 	/**
 	 * @since 1.2.2
 	 */
 	wp_localize_script(
-		'shapely-scripts', 'ShapelyAdminObject',
+		'shapely-scripts',
+		'ShapelyAdminObject',
 		array(
 			'sticky_header' => get_theme_mod( 'shapely_sticky_header', 1 ),
 		)
@@ -403,24 +389,6 @@ function shapely_scripts() {
 }
 
 add_action( 'wp_enqueue_scripts', 'shapely_scripts' );
-
-/**
- * Warm up the Google Fonts connection before the stylesheet is requested.
- *
- * Saves a DNS + TLS round trip on the render-blocking font request.
- */
-function shapely_resource_hints( $hints, $relation_type ) {
-	if ( 'preconnect' === $relation_type && wp_style_is( 'shapely-fonts', 'enqueued' ) ) {
-		$hints[] = array(
-			'href'        => 'https://fonts.gstatic.com',
-			'crossorigin' => 'anonymous',
-		);
-	}
-
-	return $hints;
-}
-
-add_filter( 'wp_resource_hints', 'shapely_resource_hints', 10, 2 );
 
 /*
  * Bootstrap the theme classes.

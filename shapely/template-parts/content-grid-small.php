@@ -11,33 +11,33 @@
 	<article id="post-<?php the_ID(); ?>" <?php post_class( 'post-content post-grid-small col-md-6' ); ?> >
 		<header class="entry-header nolist">
 			<?php
-			$category      = get_the_category();
-			$show_category = true;
+			$shapely_category      = get_the_category();
+			$shapely_show_category = true;
 			if ( is_category() ) {
-				$show_category = get_theme_mod( 'show_category_on_category_page', 1 );
+				$shapely_show_category = get_theme_mod( 'show_category_on_category_page', 1 );
 			}
-			
+
 			// Check the global category display setting
-			$show_categories_globally = get_theme_mod( 'show_categories_globally', true );
-			$show_category = $show_category && $show_categories_globally;
-			
+			$shapely_show_categories_globally = get_theme_mod( 'show_categories_globally', true );
+			$shapely_show_category            = $shapely_show_category && $shapely_show_categories_globally;
+
 			// Use shapely_get_thumbnail that respects the placeholder settings
 			if ( has_post_thumbnail() ) {
-				$image = get_the_post_thumbnail( get_the_ID(), 'shapely-grid' );
+				$shapely_image = get_the_post_thumbnail( get_the_ID(), 'shapely-grid' );
 			} else {
-				$image = shapely_get_thumbnail( 'shapely-grid' );
+				$shapely_image = shapely_get_thumbnail( 'shapely-grid' );
 			}
 			?>
-			<?php if ( ! empty( $image ) ) : ?>
+			<?php if ( ! empty( $shapely_image ) ) : ?>
 			<a href="<?php echo esc_url( get_the_permalink() ); ?>" aria-label="<?php echo esc_attr( get_the_title() ); ?>">
-				<?php echo wp_kses( $image, shapely_image_allowed_html() ); ?>
+				<?php echo wp_kses( $shapely_image, shapely_image_allowed_html() ); ?>
 			</a>
 			<?php endif; ?>
 
-			<?php if ( isset( $category[0] ) && $show_category ) : ?>
+			<?php if ( isset( $shapely_category[0] ) && $shapely_show_category ) : ?>
 				<span class="shapely-category">
-					<a href="<?php echo esc_url( get_category_link( $category[0]->term_id ) ); ?>">
-						<?php echo esc_html( $category[0]->name ); ?>
+					<a href="<?php echo esc_url( get_category_link( $shapely_category[0]->term_id ) ); ?>">
+						<?php echo esc_html( $shapely_category[0]->name ); ?>
 					</a>
 				</span>
 			<?php endif; ?>
@@ -58,13 +58,15 @@
 			the_content(
 				sprintf(
 					/* translators: %s: Name of current post. */
-							wp_kses(
-								__( 'Read more %s <span class="meta-nav">&rarr;</span>', 'shapely' ), array(
-									'span' => array(
-										'class' => array(),
-									),
-								)
+					wp_kses(
+						/* translators: %s: post title, for screen readers */
+						__( 'Read more %s <span class="meta-nav">&rarr;</span>', 'shapely' ),
+						array(
+							'span' => array(
+								'class' => array(),
 							),
+						)
+					),
 					the_title( '<span class="screen-reader-text">"', '"</span>', false )
 				)
 			);

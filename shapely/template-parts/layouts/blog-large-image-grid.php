@@ -9,18 +9,18 @@ while ( have_posts() ) :
 	 * If you want to override this in a child theme, then include a file
 	 * called content-___.php (where ___ is the Post Format name) and that will be used instead.
 	 */
-	if ( 0 == $wp_query->current_post ) {
+	if ( 0 === $wp_query->current_post ) {
 		get_template_part( 'template-parts/content', 'grid-wide' );
 	} else {
-		if ( 1 == fmod( $wp_query->current_post, 2 ) ) {
+		if ( 1 === $wp_query->current_post % 2 ) {
 			echo '<div class="row">';
 		}
 
 		get_template_part( 'template-parts/content', 'grid-small' );
 
-		if ( 0 == fmod( $wp_query->current_post, 2 ) && $wp_query->current_post != (int) $wp_query->post_count ) {
+		if ( 0 === $wp_query->current_post % 2 && (int) $wp_query->post_count !== $wp_query->current_post ) {
 			echo '</div>';
-		} elseif ( ( $wp_query->current_post + 1 ) == (int) $wp_query->post_count ) {
+		} elseif ( (int) $wp_query->post_count === $wp_query->current_post + 1 ) {
 			echo '</div>';
 		}
 	}
@@ -28,4 +28,3 @@ while ( have_posts() ) :
 endwhile;
 ?>
 <?php
-

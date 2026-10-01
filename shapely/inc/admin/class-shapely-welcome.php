@@ -102,10 +102,10 @@ if ( ! class_exists( 'Shapely_Welcome' ) ) :
 		 */
 		private function tabs() {
 			return array(
-				'getting-started'      => esc_html__( 'Getting Started', 'shapely' ),
-				'recommended-actions'  => esc_html__( 'Recommended Actions', 'shapely' ),
-				'recommended-plugins'  => esc_html__( 'Recommended Plugins', 'shapely' ),
-				'support'              => esc_html__( 'Support', 'shapely' ),
+				'getting-started'     => esc_html__( 'Getting Started', 'shapely' ),
+				'recommended-actions' => esc_html__( 'Recommended Actions', 'shapely' ),
+				'recommended-plugins' => esc_html__( 'Recommended Plugins', 'shapely' ),
+				'support'             => esc_html__( 'Support', 'shapely' ),
 			);
 		}
 
@@ -138,7 +138,7 @@ if ( ! class_exists( 'Shapely_Welcome' ) ) :
 		 *
 		 * @param string $hook Current admin page.
 		 */
-		public function enqueue( $hook ) {
+		public function enqueue() {
 			$on_screen = $this->is_welcome_screen();
 
 			// The dismissible notice appears on every admin page, so its script
@@ -173,7 +173,10 @@ if ( ! class_exists( 'Shapely_Welcome' ) ) :
 					'dismissNonce' => wp_create_nonce( 'shapely_dismiss' ),
 					'strings'      => array(
 						'imported'  => esc_html__( 'Demo content was imported successfully.', 'shapely' ),
-						'importing' => esc_html__( 'Importing&hellip;', 'shapely' ),
+						// Inserted with .text(), and wp_localize_script() only
+						// decodes entities in top-level values: this showed a
+						// literal "&hellip;".
+						'importing' => html_entity_decode( __( 'Importing&hellip;', 'shapely' ), ENT_QUOTES, 'UTF-8' ),
 						'failed'    => esc_html__( 'There was an error importing the demo content.', 'shapely' ),
 					),
 				)
@@ -279,7 +282,8 @@ if ( ! class_exists( 'Shapely_Welcome' ) ) :
 				wp_send_json_error( array( 'message' => esc_html__( 'Not allowed', 'shapely' ) ), 403 );
 			}
 
-			update_option( 'shapely_welcome_notice_dismissed', 1, false );
+			// Autoloaded: it is checked on every admin page.
+			update_option( 'shapely_welcome_notice_dismissed', 1, true );
 
 			wp_send_json_success();
 		}

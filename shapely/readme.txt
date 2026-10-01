@@ -2,10 +2,10 @@
 
 Theme Name: Shapely
 Theme URI: https://colorlib.com/wp/themes/shapely/
-Version: 1.3.6
+Version: 1.3.7
 
 Requires at least: 6.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 
 Author: Colorlib
@@ -55,17 +55,69 @@ This page template is used to create the Parallax homepage from our demo : https
 
 * Based on Underscores https://underscores.me/, (C) 2012-2017 Automattic, Inc., [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)
 * normalize.css https://necolas.github.io/normalize.css/, (C) 2012-2017 Nicolas Gallagher and Jonathan Neal, [MIT](http://opensource.org/licenses/MIT)
-* TGM Plugin Activation - https://tgmpluginactivation.com/, 2011, Thomas Griffin [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html)
-* Bootstrap v3.3.6 (https://getbootstrap.com), Copyright 2011-2014 Twitter, Inc. Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-* Font Awesome 6 by @davegandy - https://fontawesome.io - @fontawesome
-	License - https://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+* Bootstrap v3.4.1 (https://getbootstrap.com), Copyright 2011-2019 Twitter, Inc. Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+* Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com
+	License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+* Raleway font, Copyright 2010 The Raleway Project Authors (https://github.com/impallari/Raleway), [SIL Open Font License 1.1](https://openfontlicense.org)
 * WP-Bootstrap-NavWalker licensed under the GPLv2 license (https://www.gnu.org/licenses/gpl-2.0.html)
 * FlexSlider by WooThemes licensed under the GPLv2 license (https://www.gnu.org/licenses/gpl-2.0.html)
-* jQuery Smooth Scroll, httpss://github.com/kswedberg/jquery-smooth-scroll. Copyright (c) 2015 Karl Swedberg. Licensed MIT(https://github.com/kswedberg/jquery-smooth-scroll/blob/master/LICENSE-MIT)
-* jQuery Cloneya, Lisensed under [MIT](https://opensource.org/licenses/MIT)
+* Owl Carousel 2.3.4, Copyright 2013-2018 David Deutsch, [MIT](https://github.com/OwlCarousel2/OwlCarousel2/blob/master/LICENSE)
+* parallax.js 1.5.0, Copyright 2016 PixelCog Inc., [MIT](https://github.com/pixelcog/parallax.js/blob/master/LICENSE)
 
 
 == Upgrade Notice ==
+
+= 1.3.7 =
+Fixes page templates, block layouts beside a sidebar, "#" menu items, threaded comments and the portfolio archive, restores the Font Awesome subset, and stops a database write on every page view. Pages using the Full Width, No Sidebar or Sidebar templates now look like pages rather than blog posts. Body text is a little darker, to meet accessibility contrast guidelines, and there are new block patterns for building the home page.
+
+= 1.3.1 =
+Fixes two regressions from 1.3.0: links taking the button colour when the two
+were set differently, and child themes that replace the theme's Bootstrap,
+FlexSlider or Owl Carousel silently getting the parent's copy back. Both are
+fixed automatically -- nothing to change on your site.
+
+= 1.3.0 =
+Removes the bundled Epsilon framework and adds theme.json. Your settings carry
+over untouched and the site should look identical. Child themes that dequeue the
+theme's Bootstrap, FlexSlider or Owl Carousel assets need their handles updated
+to shapely-bootstrap, shapely-flexslider, shapely-owl-carousel and
+shapely-owl-carousel-theme.
+
+== Changelog ==
+
+= 1.3.7 =
+* Pages using the Full Width, No Sidebar, Sidebar Left or Sidebar Right template now use the page layout. They were rendered as blog posts, with a date, category, author box and a grey placeholder image when there was no featured image.
+* Wide and full-width blocks no longer spill over the sidebar. On layouts with a sidebar -- the default for posts -- they covered it and ran off the edge of the screen; they now fill the content column.
+* Block widget titles (the default since WordPress 5.8) are styled like classic widget titles instead of full-size headings, in the sidebar, the footer and the Customizer preview. The Latest Comments block no longer has 144px of padding around each comment.
+* Restored the Font Awesome subset: every page was loading about 350 KB of icon CSS and fonts again. It is 30 KB now. The complete icon set loads automatically when Shapely Companion's Features or Video section is used, and also understands the Font Awesome 4 icon names those sections store, which previously showed as empty squares.
+* Menu items linking to "#" -- the usual way to add a dropdown parent -- linked to a page that does not exist and lost their dropdown arrow on mobile. They keep "#" now.
+* Menu links to a section on the page ("#contact") scroll smoothly to it.
+* Threaded comments are nested correctly, show their real time, and Reply is a button again. Name and email are only required when Settings > Discussion says so, and the comment fields have labels for screen readers.
+* The WooCommerce product search widget searches products only; it returned posts and pages too.
+* The password form for protected posts no longer pre-fills the password field with the search text, shows WordPress' "Invalid password" message, and returns to the post after a wrong password.
+* The portfolio archive: the grid is closed before the page links, so a right sidebar sits beside it rather than inside it; projects without a featured image show a tile with their title instead of an empty square; project type badges link to their archive.
+* Jetpack Infinite Scroll loads posts into the posts column in your chosen blog layout, and Jetpack's Content Options toggles work.
+* Single posts have one h1 with the full title; it was an h2 cut to nine words.
+* The logo, attachment pages and related posts serve responsive images again (srcset was being stripped), so logos are sharp on high-density screens and attachment pages no longer send the full-size original.
+* Customizer: the project "Tags" option appears and works; opening the Customizer on a Builder page opens that page's widgets; "Title in Blog Post" shows its real state and is available with Rank Math as well as Yoast; the placeholder image, logo size and layout options no longer save values that break the site; clearing the Portfolio title falls back to "Portfolio"; unticking "Display Site Title and Tagline" no longer produces invalid CSS; clearer labels for the header transparency options.
+* Colour settings are validated before they are written into the page's CSS.
+* Performance: the Builder no longer writes to the database on every page view; the carousel script and styles load only on single posts and projects; skip-link-focus-fix.js, which modern browsers do not need, is removed; the fonts stylesheet is versioned so updates reach returning visitors.
+* The theme's font, Raleway, is served from the theme instead of Google Fonts, so no visitor request goes to a third party.
+* The block editor loads the theme's editor styles.
+* Compatible with jQuery 4: the related posts carousel failed on it and stopped the header search and contact form handling from working.
+* Fixed a plugin that registers its own "bootstrap" stylesheet removing the theme's layout stylesheet.
+* The Demo Content import says when Shapely Companion is needed instead of failing with "There was an error", no longer lists plugin checkboxes that did nothing, and cannot be run twice by a double click.
+* New sites switching from another theme see the welcome notice again.
+* Page widgets parked in Inactive Widgets are no longer deleted when widgets are saved.
+* Tested with WordPress 7.1 and PHP 8.5.
+* New: block patterns for the home page sections -- Hero, Three features, Testimonials, Latest posts, Call to action band and Contact details -- and a Home page pattern that puts them together, plus a "Blocks (full width, no title)" page template to build pages with them. The home page no longer has to be built from Shapely Companion widgets.
+* Colours come from one palette. A link or button colour set in the Customizer now reaches the parts that used to stay purple -- menu hovers, widget links, pagination, the calendar, form focus borders -- and shows in the block editor and its colour pickers too. The Customizer's colour CSS is part of the stylesheet instead of being printed into every page.
+* Button hovers use one shade everywhere.
+* The block editor is as wide as the column the post is published in -- 750px beside a sidebar -- so what you edit matches what visitors see.
+* Accessibility: body text is darker so it meets the WCAG AA contrast minimum; the submenu arrow and the header search are real buttons that work from the keyboard and tell screen readers whether they are open; menu items are no longer announced twice; the navigation, sidebar and footer areas are labelled; archive pages have a main heading; the social menu no longer repeats its ids on the home page.
+* Menu links to a section on the page stop with the section just below the sticky header instead of partly behind it.
+* The Demo Content import tells editors it needs an administrator instead of failing with an error.
+* Dropdown menus on the right-hand menu items open leftwards when there is no room on the right. They ran off the edge of the window, which gave every page a horizontal scrollbar even with the menu closed.
 
 = 1.3.6 =
 * Removed KB Support from the recommended plugins. WordPress.org closed it on 2025-04-03 over a security issue.
@@ -87,21 +139,6 @@ This page template is used to create the Parallax homepage from our demo : https
 * Updated the bundled Bootstrap from 3.3.7 to 3.4.1, the final release of the 3.x line and the one that fixed CVE-2019-8331. Shapely enqueues only Bootstrap's stylesheet and never its JavaScript, so the theme was not exposed to that defect, which is a JavaScript one -- but there is no reason to keep the superseded build. Both stylesheets were stock 3.3.7, so this is a straight replacement.
 * The Customizer preview wrote its AJAX response into a <style> element with jQuery's .html(), which parses its argument as markup. The payload is CSS from the theme's own nonce- and capability-checked endpoint, so this was not reachable as a vulnerability, but it is inserted with .text() now.
 * parallax.js was enqueued with the theme's version string instead of its own, so its URL changed on every theme release and gave no indication of which build was in use. It declares 1.5.0, matching the bundled file.
-
-= 1.3.1 =
-Fixes two regressions from 1.3.0: links taking the button colour when the two
-were set differently, and child themes that replace the theme's Bootstrap,
-FlexSlider or Owl Carousel silently getting the parent's copy back. Both are
-fixed automatically -- nothing to change on your site.
-
-= 1.3.0 =
-Removes the bundled Epsilon framework and adds theme.json. Your settings carry
-over untouched and the site should look identical. Child themes that dequeue the
-theme's Bootstrap, FlexSlider or Owl Carousel assets need their handles updated
-to shapely-bootstrap, shapely-flexslider, shapely-owl-carousel and
-shapely-owl-carousel-theme.
-
-== Changelog ==
 
 = 1.3.1 =
 * Fixed link colours changing after the 1.3.0 update on sites that set a different colour for links and for buttons. Both were being written to the same internal colour slot, so whichever was saved last won and links took the button's colour
@@ -260,4 +297,4 @@ shapely-owl-carousel-theme.
 = 1.0.0 - March 26 2016 =
 * Initial release
 
-Stable tag: 1.3.6
+Stable tag: 1.3.7

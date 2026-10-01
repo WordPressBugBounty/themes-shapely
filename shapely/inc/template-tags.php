@@ -26,11 +26,11 @@ if ( ! function_exists( 'shapely_posted_on' ) ) :
 		); ?>
 
 		<ul class="post-meta">
-		<li><i class="fa fa-user"></i><span><a
+		<li><i class="fa-solid fa-user"></i><span><a
 					href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>"
 					title="<?php echo esc_attr( get_the_author() ); ?>"><?php echo esc_html( get_the_author() ); ?></a></span>
 		</li>
-		<li><i class="fa fa-calendar"></i><span class="posted-on"><?php echo wp_kses_post( $time_string ); ?></span></li>
+		<li><i class="fa-solid fa-calendar"></i><span class="posted-on"><?php echo wp_kses_post( $time_string ); ?></span></li>
 		<?php shapely_post_category(); ?>
 		</ul>
 		<?php
@@ -66,25 +66,25 @@ if ( ! function_exists( 'shapely_posted_on_no_cat' ) ) :
 		);
 
 		if ( $post_date || $post_author ) :
-		?>
+			?>
 
 		<ul class="post-meta">
-		<?php if ( $post_date ) : ?>
+			<?php if ( $post_date ) : ?>
 			<li><span class="posted-on"><?php echo wp_kses_post( $time_string ); ?></span></li>
 		<?php endif ?>
-		<?php
-		/*
-		 * Imported content can carry post_author = 0, which made this render an
-		 * empty <a> pointing at a bare /author/ URL. Only output the byline when
-		 * there is a real author to link to.
-		 */
-		$shapely_author_id = (int) get_the_author_meta( 'ID' );
-		if ( $post_author && $shapely_author_id > 0 ) :
-			?>
+			<?php
+			/*
+			* Imported content can carry post_author = 0, which made this render an
+			* empty <a> pointing at a bare /author/ URL. Only output the byline when
+			* there is a real author to link to.
+			*/
+			$shapely_author_id = (int) get_the_author_meta( 'ID' );
+			if ( $post_author && $shapely_author_id > 0 ) :
+				?>
 			<li><span><?php echo esc_html__( 'by', 'shapely' ); ?> <a href="<?php echo esc_url( get_author_posts_url( $shapely_author_id ) ); ?>" title="<?php echo esc_attr( get_the_author() ); ?>"><?php echo esc_html( get_the_author() ); ?></a></span></li>
-		<?php endif ?>
+			<?php endif ?>
 		</ul>
-		<?php
+			<?php
 		endif;
 	}
 endif;
@@ -99,14 +99,16 @@ if ( ! function_exists( 'shapely_entry_footer' ) ) :
 			/* translators: used between list items, there is a space after the comma */
 			$categories_list = get_the_category_list( esc_html__( ', ', 'shapely' ) );
 			if ( $categories_list && shapely_categorized_blog() ) {
-				printf( '<span class="cat-links">' . esc_html__( 'Posted in %1$s', 'shapely' ) . '</span>', $categories_list ); // WPCS: XSS OK.
+				/* translators: %1$s: list of categories */
+				printf( '<span class="cat-links">' . esc_html__( 'Posted in %1$s', 'shapely' ) . '</span>', wp_kses_post( $categories_list ) );
 			}
 
 			/* translators: used between list items, there is a space after the comma */
 			$tags_list = get_the_tag_list( '', esc_html__( ', ', 'shapely' ) );
 
 			if ( $tags_list ) {
-				printf( '<span class="tags-links">' . esc_html__( 'Tagged %1$s', 'shapely' ) . '</span>', $tags_list ); // WPCS: XSS OK.
+				/* translators: %1$s: list of tags */
+				printf( '<span class="tags-links">' . esc_html__( 'Tagged %1$s', 'shapely' ) . '</span>', wp_kses_post( $tags_list ) );
 			}
 		}
 
@@ -129,51 +131,51 @@ if ( ! function_exists( 'shapely_entry_footer' ) ) :
 endif;
 
 if ( ! function_exists( 'shapely_categorized_blog' ) ) :
-/**
- * Returns true if a blog has more than 1 category.
- *
- * @return bool
- */
-function shapely_categorized_blog() {
-	$all_the_cool_cats = get_transient( 'shapely_categories' );
-	if ( false === $all_the_cool_cats ) {
-		// Create an array of all the categories that are attached to posts.
-		$all_the_cool_cats = get_categories(
-			array(
-				'fields'     => 'ids',
-				'hide_empty' => 1,
-				'number'     => 2,
-			)
-		);
+	/**
+	 * Returns true if a blog has more than 1 category.
+	 *
+	 * @return bool
+	 */
+	function shapely_categorized_blog() {
+		$all_the_cool_cats = get_transient( 'shapely_categories' );
+		if ( false === $all_the_cool_cats ) {
+			// Create an array of all the categories that are attached to posts.
+			$all_the_cool_cats = get_categories(
+				array(
+					'fields'     => 'ids',
+					'hide_empty' => 1,
+					'number'     => 2,
+				)
+			);
 
-		// Count the number of categories that are attached to the posts.
-		$all_the_cool_cats = count( $all_the_cool_cats );
+			// Count the number of categories that are attached to the posts.
+			$all_the_cool_cats = count( $all_the_cool_cats );
 
-		// Bounded lifetime so a stale count cannot outlive its flush hooks forever.
-		set_transient( 'shapely_categories', $all_the_cool_cats, DAY_IN_SECONDS );
+			// Bounded lifetime so a stale count cannot outlive its flush hooks forever.
+			set_transient( 'shapely_categories', $all_the_cool_cats, DAY_IN_SECONDS );
+		}
+
+		if ( $all_the_cool_cats > 1 ) {
+			// This blog has more than 1 category so shapely_categorized_blog should return true.
+			return true;
+		} else {
+			// This blog has only 1 category so shapely_categorized_blog should return false.
+			return false;
+		}
 	}
-
-	if ( $all_the_cool_cats > 1 ) {
-		// This blog has more than 1 category so shapely_categorized_blog should return true.
-		return true;
-	} else {
-		// This blog has only 1 category so shapely_categorized_blog should return false.
-		return false;
-	}
-}
 endif;
 
 if ( ! function_exists( 'shapely_category_transient_flusher' ) ) :
-/**
- * Flush out the transients used in shapely_categorized_blog.
- */
-function shapely_category_transient_flusher() {
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return;
+	/**
+	 * Flush out the transients used in shapely_categorized_blog.
+	 */
+	function shapely_category_transient_flusher() {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+		// Like, beat it. Dig?
+		delete_transient( 'shapely_categories' );
 	}
-	// Like, beat it. Dig?
-	delete_transient( 'shapely_categories' );
-}
 endif;
 
 add_action( 'edit_category', 'shapely_category_transient_flusher' );
@@ -187,44 +189,46 @@ if ( ! function_exists( 'shapely_post_category' ) ) :
 	function shapely_post_category() {
 		$category = get_the_category();
 		if ( ! empty( $category ) ) {
-			$i = ( 'uncategorized' == $category[0]->slug && array_key_exists( '1', $category ) ) ? 1 : 0;
-			echo '<li><i class="fa fa-folder-open"></i><span class="cat-links"><a href="' . esc_url( get_category_link( $category[ $i ]->term_id ) ) . '" title="' . sprintf( esc_html__( 'View all posts in %s', 'shapely' ), esc_attr( $category[ $i ]->name ) ) . '" ' . '>' . esc_html( $category[ $i ]->name ) . '</a></span></li> ';
+			$i = ( 'uncategorized' === $category[0]->slug && array_key_exists( '1', $category ) ) ? 1 : 0;
+			echo '<li><i class="fa-solid fa-folder-open"></i><span class="cat-links"><a href="' . esc_url( get_category_link( $category[ $i ]->term_id ) ) . '" title="' .
+				/* translators: %s: category name */
+				sprintf( esc_html__( 'View all posts in %s', 'shapely' ), esc_attr( $category[ $i ]->name ) ) . '">' . esc_html( $category[ $i ]->name ) . '</a></span></li> ';
 		}
 	}
 endif;
 
 if ( ! function_exists( 'shapely_add_span_cat_count' ) ) :
-/**
- * Filter the categories widget to add a <span> element before the count
- *
- * @param $links
- *
- * @return mixed
- */
-function shapely_add_span_cat_count( $links ) {
-	/*
-	 * Match the count in one pass. The previous two-step str_replace() turned every
-	 * ")" in the markup into "</span>", mangling category names and URLs that
-	 * legitimately contain a closing parenthesis.
+	/**
+	 * Filter the categories widget to add a <span> element before the count
+	 *
+	 * @param $links
+	 *
+	 * @return mixed
 	 */
-	return preg_replace(
-		'#</a>\s*\((\d+)\)#',
-		'</a> <span class="shapely-cat-count">$1</span>',
-		$links
-	);
-}
+	function shapely_add_span_cat_count( $links ) {
+		/*
+		 * Match the count in one pass. The previous two-step str_replace() turned every
+		 * ")" in the markup into "</span>", mangling category names and URLs that
+		 * legitimately contain a closing parenthesis.
+		 */
+		return preg_replace(
+			'#</a>\s*\((\d+)\)#',
+			'</a> <span class="shapely-cat-count">$1</span>',
+			$links
+		);
+	}
 endif;
 
 add_filter( 'wp_list_categories', 'shapely_add_span_cat_count' );
 
 if ( ! function_exists( 'shapely_add_span_archive_count' ) ) :
-function shapely_add_span_archive_count( $links ) {
-	return preg_replace(
-		'#</a>(?:&nbsp;|\s)*\((\d+)\)#',
-		'</a> <span class="shapely-cat-count">$1</span>',
-		$links
-	);
-}
+	function shapely_add_span_archive_count( $links ) {
+		return preg_replace(
+			'#</a>(?:&nbsp;|\s)*\((\d+)\)#',
+			'</a> <span class="shapely-cat-count">$1</span>',
+			$links
+		);
+	}
 endif;
 
 add_filter( 'get_archives_link', 'shapely_add_span_archive_count' );

@@ -20,20 +20,31 @@ if ( ! function_exists( 'shapely_social_icons' ) ) :
 	 * @package shapely
 	 */
 	function shapely_social_icons() {
+		static $count = 0;
+
 		if ( ! has_nav_menu( 'social-menu' ) ) {
 			return;
 		}
 
+		/*
+		 * The footer prints this and so does shapely-companion's Contact
+		 * section, which duplicated both ids on the home page. Later copies
+		 * are numbered; style.css styles #social, #social-2 and #social-3.
+		 */
+		++$count;
+		$suffix = 1 === $count ? '' : '-' . $count;
+
 		wp_nav_menu(
 			array(
-				'theme_location'  => 'social-menu',
-				'container'       => 'nav',
-				'container_id'    => 'social',
-				'container_class' => 'social-icons',
-				'menu_id'         => 'menu-social-items',
-				'menu_class'      => 'list-inline social-list',
-				'depth'           => 1,
-				'fallback_cb'     => '',
+				'theme_location'       => 'social-menu',
+				'container'            => 'nav',
+				'container_id'         => 'social' . $suffix,
+				'container_class'      => 'social-icons',
+				'container_aria_label' => __( 'Social links', 'shapely' ),
+				'menu_id'              => 'menu-social-items' . $suffix,
+				'menu_class'           => 'list-inline social-list',
+				'depth'                => 1,
+				'fallback_cb'          => '',
 			)
 		);
 	}
@@ -158,7 +169,7 @@ if ( ! function_exists( 'shapely_social_menu_item_args' ) ) :
 	 *
 	 * @return stdClass
 	 */
-	function shapely_social_menu_item_args( $args, $item, $depth ) {
+	function shapely_social_menu_item_args( $args, $item ) {
 		if ( ! is_object( $args ) || empty( $args->theme_location ) || 'social-menu' !== $args->theme_location ) {
 			return $args;
 		}
@@ -175,7 +186,7 @@ if ( ! function_exists( 'shapely_social_menu_item_args' ) ) :
 		return $args;
 	}
 endif;
-add_filter( 'nav_menu_item_args', 'shapely_social_menu_item_args', 10, 3 );
+add_filter( 'nav_menu_item_args', 'shapely_social_menu_item_args', 10, 2 );
 
 if ( ! function_exists( 'shapely_social_menu_filter' ) ) :
 	/**
